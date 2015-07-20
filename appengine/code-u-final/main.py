@@ -30,26 +30,55 @@ class MainHandler(webapp2.RequestHandler):
 class UserCreateHandler(webapp2.RequestHandler):
     def get(self):
         email = self.request.get('email')
+        
+        #Check if email is not empty
+        if (email == ""):
+            self.response.set_status(400)
+            self.response.write("Email not provided")
+            return
+        
+        
+        #Check if the email is already in use
+        existing_user = User.query(User.email == email).fetch()
+        if (len(existing_user) > 0):
+            self.response.set_status(406)
+            self.response.write("Email already in use")
+            return
+        
         lists = {
             "itemLists" : []
         }
 
         #Add the new user to the database
         user = User(email=email,item_lists=json.encode(lists))
-        user_key = user.put()
+        user_key = (user.put()).urlsafe()
+
 
         #Respond with the user key
-        self.response.write(user_key.urlsafe())
+        self.response.set_status(201)
+        self.response.write(user_key)
 
 
 class ItemListCreateHandler(webapp2.RequestHandler):
     def get(self):
 
+        #Check if the list name is provided
         name = self.request.get('name')
+        if (name == ""):
+            self.response.set_status(400)
+            self.response.write("List name not provided")
+            return
+        
+        #Checks if user exists
         user_key = ndb.Key(urlsafe=self.request.get('user_key'))
         user = user_key.get()
+        if (user == null){
+            self.response.set_status(400)
+            self.response.write("The user does not exist")
+            return
+        }
         
-        
+        #Set the list to empty
         list_content = {
             "items" : []
         }
@@ -61,17 +90,21 @@ class ItemListCreateHandler(webapp2.RequestHandler):
         #Add the item list key to the user's avaliable lists
         user_item_lists = json.decode(user.item_lists)
         user_item_lists["itemLists"].append(item_list_key)
-
         user.item_lists = json.encode(user_item_lists)
         user.put()
 
-
+        #Respond with a success
+        self.response.set_status(201)
         self.response.write(user_item_lists)
 
+class ItemListItemHandler(webapp2.RequestHandler):
+    def get(self):
+        pass
 
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/user/create', UserCreateHandler),
     ('/list/create',ItemListCreateHandler)
+    ('/list/item',ItemListCreateHandler)
 ], debug=True)
