@@ -36,7 +36,7 @@ The changed content is a JSON string that represnets what is being added to the 
 }
 ```
 
-When passed as the changed content, this will add two items to the item list. The *_id* and *_op* are both required fields. Any additional properties will be included in the item (name, quantity, ect.). I will elaborate on how we generate the id later, but each *_id* will be unique. The operation code specifies what we do with this item (add/delete). When set to "add" the items are added to the list. In order to delete elements, set the *_op* to *delete*
+When passed as the changed content, this will add two items to the item list. The **_id** and **_op** are both required fields. Any additional properties will be included in the item (name, quantity, ect.). I will elaborate on how we generate the id later, but each **_id** will be unique. The operation code specifies what we do with this item (add/delete). When set to "add" the items are added to the list. In order to delete elements, set the **_op** to "delete":
 
 ```javascript
 {  
