@@ -18,7 +18,7 @@ public class MainActivity extends ActionBarActivity {
 
     private ListView numberList;
     MyThumbnailAdapter delAdapter = null;
-    ArrayList<String> dummyData = new ArrayList<>();
+    ArrayList<String> dummyData = new ArrayList<String>();
 
     // Creates fake items
     @Override

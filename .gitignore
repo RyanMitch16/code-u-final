@@ -17,3 +17,8 @@ local.properties
 # gradle directory
 .gradle/
 build/
+android/app/gradlew.bat
+
+android/app/gradle/wrapper/gradle-wrapper.properties
+
+android/app/app.iml

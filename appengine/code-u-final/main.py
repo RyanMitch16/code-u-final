@@ -144,6 +144,34 @@ class ItemListEditHandler(webapp2.RequestHandler):
         self.response.set_status(201)
         self.response.write((str(json.dumps(list.content)).replace("\\\"","\""))[1:-1])
 
+class ItemListGetAllHandler(webapp2.RequestHandler):
+    def get(self):
+        
+        #Checks if user exists
+        user_key = ndb.Key(urlsafe=self.request.get('user_key'))
+        user = user_key.get()
+        if (user == None):
+            self.response.set_status(400)
+            self.response.write("The user does not exist")
+            return
+
+        response = {
+            "itemLists" : []
+        }
+
+        for list_key_str in user.item_lists["itemLists"]:
+            list_key = ndb.Key(urlsafe=list_key_str)
+            list = list_key.get()
+
+            response["itemLists"].append({
+                "list_key" : list_key_str,
+                "name" : list.name
+            }
+        )
+
+        self.response.set_status(200)
+        self.response.write((str(json.dumps(response)).replace("\\\"","\""))[1:-1])
+
 
 class ItemListGetHandler(webapp2.RequestHandler):
 
