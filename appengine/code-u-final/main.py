@@ -53,7 +53,7 @@ class UserCreateHandler(webapp2.RequestHandler):
         }
 
         #Add the new user to the database
-        user = User(email=email,item_lists=json.encode(lists))
+        user = User(email=email,item_lists=webapp2_json.encode(lists))
         user_key = (user.put()).urlsafe()
 
 
@@ -66,7 +66,7 @@ class ItemListCreateHandler(webapp2.RequestHandler):
     def get(self):
 
         #Check if the list name is provided
-        name = self.request.get('name')
+        name = self.request.get('list_name')
         if (name == ""):
             self.response.set_status(400)
             self.response.write("List name not provided")
@@ -88,7 +88,7 @@ class ItemListCreateHandler(webapp2.RequestHandler):
         }
         
         #Add the new item list to the database
-        item_list = ItemList(name=name, content=json.encode(list_content))
+        item_list = ItemList(name=name, content=webapp2_json.encode(list_content))
         item_list_key = (item_list.put()).urlsafe()
         
         #Add the item list key to the user's avaliable lists

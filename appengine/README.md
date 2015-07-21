@@ -43,8 +43,8 @@ When passed as the changed content, this will add two items to the item list. Th
     "items":[  
         {  
             "_id":"a0",
-            "_op":"delete",
-        },
+            "_op":"delete"
+        }
     ]
 }
 ```
