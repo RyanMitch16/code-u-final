@@ -16,7 +16,8 @@
 #
 import webapp2
 
-from webapp2_extras import json
+import json
+from webapp2_extras import json as webapp2_json
 
 from google.appengine.ext import ndb
 
@@ -82,6 +83,7 @@ class ItemListCreateHandler(webapp2.RequestHandler):
         
         #Set the list to empty
         list_content = {
+            "itemIDCount" : 0,
             "items" : []
         }
         
@@ -90,9 +92,9 @@ class ItemListCreateHandler(webapp2.RequestHandler):
         item_list_key = (item_list.put()).urlsafe()
         
         #Add the item list key to the user's avaliable lists
-        user_item_lists = json.decode(user.item_lists)
+        user_item_lists = webapp2_json.decode(user.item_lists)
         user_item_lists["itemLists"].append(item_list_key)
-        user.item_lists = json.encode(user_item_lists)
+        user.item_lists = webapp2_json.encode(user_item_lists)
         user.put()
 
         #Respond with the list key
@@ -101,9 +103,8 @@ class ItemListCreateHandler(webapp2.RequestHandler):
 
 
 class ItemListEditHandler(webapp2.RequestHandler):
+    
     def get(self):
-        opcode = self.request.get('opcode')
-        
         #Checks if user exists
         user_key = ndb.Key(urlsafe=self.request.get('user_key'))
         user = user_key.get()
@@ -123,57 +124,67 @@ class ItemListEditHandler(webapp2.RequestHandler):
         
         #Checks if the user is allowed to edit the list
         allowed = False
-        user_item_lists = json.decode(user.item_lists)
+        user_item_lists = webapp2_json.decode(user.item_lists)
         for item_list in user_item_lists["itemLists"]:
             if (item_list == list_key_str):
                 allowed = True
                 break
         if (allowed == False):
             self.response.set_status(403)
-            self.response.write("User not allowed to edit list")
+            self.response.write("User not allowed to edit this list")
+            return
+        
+        #Get the json with the new data
+        changed_content_str = self.request.get('changed_content')
+        changed_content = webapp2_json.decode(changed_content_str)
+        
+        #Update the content
+        list.update_content(changed_content)
+            
+        self.response.set_status(201)
+        self.response.write((str(json.dumps(list.content)).replace("\\\"","\""))[1:-1])
+
+
+class ItemListGetHandler(webapp2.RequestHandler):
+
+    def get(self):
+        #Checks if user exists
+        user_key = ndb.Key(urlsafe=self.request.get('user_key'))
+        user = user_key.get()
+        if (user == None):
+            self.response.set_status(400)
+            self.response.write("The user does not exist")
+            return
+        
+        #Checks if the list exists
+        list_key_str = self.request.get('list_key')
+        list_key = ndb.Key(urlsafe=list_key_str)
+        list = list_key.get()
+        if (list == None):
+            self.response.set_status(400)
+            self.response.write("The list does not exist")
+            return
+        
+        #Checks if the user is allowed to edit the list
+        allowed = False
+        user_item_lists = webapp2_json.decode(user.item_lists)
+        for item_list in user_item_lists["itemLists"]:
+            if (item_list == list_key_str):
+                allowed = True
+                break
+        if (allowed == False):
+            self.response.set_status(403)
+            self.response.write("User not allowed to view this list")
             return
 
-        if (opcode == "add"):
-            #Check if item name provided
-            item_name = self.request.get('item_name')
-            if (item_name == ""):
-                self.response.set_status(400)
-                self.response.write("Item name not provided")
-                return
-        
-            #Check if item quantity provided
-            item_quantity = self.request.get('item_quantity')
-            if (item_quantity == ""):
-                self.response.set_status(400)
-                self.response.write("Item Quantity not provided")
-                return
-            
-            #Construct the new item
-            item = {
-                "name" : item_name,
-                "item-quantity" : item_quantity
-            }
-            
-            #Add the item to the list
-            content = json.decode(list.content)
-            content["items"].append(item)
-            list.content = json.encode(content)
-            list.put()
-            
-            self.response.set_status(201)
-            self.response.write(content)
-
-        elif (opcode == "delete"):
-            self.response.set_status(201)
-            self.response.write("Deleted")
-        else:
-            self.response.set_status(400)
-            self.response.write("Invalid operation")
+        self.response.set_status(200)
+        self.response.write((str(json.dumps(list.content)).replace("\\\"","\""))[1:-1])
 
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/user/create', UserCreateHandler),
     ('/list/create',ItemListCreateHandler),
-    ('/list/edit',ItemListEditHandler)
+    ('/list/edit',ItemListEditHandler),
+    ('/list/get',ItemListGetHandler)
 ], debug=True)
