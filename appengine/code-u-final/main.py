@@ -159,15 +159,18 @@ class ItemListGetAllHandler(webapp2.RequestHandler):
             "itemLists" : []
         }
 
-        for list_key_str in user.item_lists["itemLists"]:
+        user_item_lists = webapp2_json.decode(user.item_lists)
+        for list_key_str in user_item_lists["itemLists"]:
             list_key = ndb.Key(urlsafe=list_key_str)
             list = list_key.get()
 
-            response["itemLists"].append({
-                "list_key" : list_key_str,
-                "name" : list.name
-            }
-        )
+            response["itemLists"].append( {
+                    "key" : list_key_str,
+                    "name" : list.name
+                }
+            )
+
+        response = webapp2_json.encode(response)
 
         self.response.set_status(200)
         self.response.write((str(json.dumps(response)).replace("\\\"","\""))[1:-1])
@@ -193,9 +196,8 @@ class ItemListGetHandler(webapp2.RequestHandler):
             self.response.write("The list does not exist")
             return
         
-        #Checks if the user is allowed to edit the list
-        allowed = False
         user_item_lists = webapp2_json.decode(user.item_lists)
+        
         for item_list in user_item_lists["itemLists"]:
             if (item_list == list_key_str):
                 allowed = True
@@ -212,6 +214,7 @@ class ItemListGetHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/user/create', UserCreateHandler),
+    ('/user/lists', ItemListGetAllHandler),
     ('/list/create',ItemListCreateHandler),
     ('/list/edit',ItemListEditHandler),
     ('/list/get',ItemListGetHandler)

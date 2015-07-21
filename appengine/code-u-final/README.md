@@ -12,6 +12,26 @@ http://code-u-final.appspot.com/list/create?user_key=[USER_KEY]&list_name=[LIST_
 
 Returns the key that represents the list on sucessful completion (Status code 201)
 
+###How to get all the lists a user has access to
+http://code-u-final.appspot.com/user/lists?user_key=[USER_KEY]
+
+Returns the lists the user can access and their names in a JSON format
+
+```javascript
+{  
+    "itemLists":[  
+        {  
+            "key":"bfui3478y73284yr0782y7843yb7843y99782y",
+            "name":"List Title"
+        },
+        {  
+            "key":"8ycbr789234t937t8y347tb9843ty7843byt78",
+            "name":"The Other List"
+        }
+    ]
+}
+```
+
 ###How to update elements in a list
 http://code-u-final.appspot.com/list/edit?user_key=[USER_KEY]&list_name=[LIST_NAME]&content=[CHANGED_CONTENT]
 
