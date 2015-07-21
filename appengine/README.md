@@ -33,7 +33,6 @@ The changed content is a JSON string that represnets what is being added to the 
             "name":"Bed"
         }
     ]
-
 }
 ```
 
@@ -46,7 +45,6 @@ When passed as the changed content, this will add two items to the item list. Th
             "_id":"a0",
             "_op":"delete",
         },
-
     ]
 }
 ```
@@ -70,7 +68,6 @@ This returns the list of items in a json format:
             "name":"Bed"
         }
     ]
-
 }
 ```
 
