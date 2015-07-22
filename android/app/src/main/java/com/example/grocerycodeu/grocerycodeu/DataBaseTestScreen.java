@@ -1,9 +1,12 @@
 package com.example.grocerycodeu.grocerycodeu;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class DataBaseTestScreen extends ActionBarActivity {
@@ -33,5 +36,11 @@ public class DataBaseTestScreen extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void startJson(View view){
+        Log.e("Intent Status", "Intent Loaded");
+        Intent intent = new Intent(this, JsonReplyTest.class);
+        startActivity(intent);
     }
 }

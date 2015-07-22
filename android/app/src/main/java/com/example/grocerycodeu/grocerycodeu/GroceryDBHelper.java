@@ -15,7 +15,7 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
 
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION =2;
+    private static final int DATABASE_VERSION = 4;
     static final String DATABASE_NAME = "groceryapp.db";
 
 
@@ -34,11 +34,8 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         final String SQL_CREATE_MENU_TABLE = "CREATE TABLE " + GroceryDBContract.GroceryList.TABLE_NAME + " (" +
-                GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_ID + " INTEGER PRIMARY KEY, " +
                 GroceryDBContract.GroceryList.COLUMN_NAME_TITLE + " TEXT NOT NULL, " +
-                GroceryDBContract.GroceryList.COLUMN_NAME_COST + " REAL NOT NULL, " +
-                GroceryDBContract.GroceryList.COLUMN_NAME_IMAGE + " TEXT NOT NULL, " +
-                GroceryDBContract.GroceryList.COLUMN_NAME_TOTAL_ORDER + " INTEGER NOT NULL " +
+                GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY + " TEXT NOT NULL " +
                 " )";
         sqLiteDatabase.execSQL(SQL_CREATE_MENU_TABLE);
     }
@@ -57,19 +54,17 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
 
      /**
       * * add a new grocery list item to the database
-      * @param  item object for the class walmartItemObject
+      * @param  title title of the list
+      * @param  key unique key for the list
       * @return unique long ID
       */
-    public long addDataFromCloud(walmartItemObject item){
+    public long addDataFromCloud(String title, String key){
 
         long newRowId;
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_ID, item.getItemID());
-            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_TITLE, item.getitemTitle());
-            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_COST, item.getItemCost());
-            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_IMAGE, item.getItemImage());
-            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_TOTAL_ORDER, item.getTotalOrder());
+            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_TITLE, title);
+            values.put(GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY, key);
         newRowId = database.insert(
                 GroceryDBContract.GroceryList.TABLE_NAME,
                 null,
@@ -80,20 +75,17 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
 
     /**
      * get all data from grocery list stored in android DB
-     * @return ArrayList of walmartItemObject stored in the DB
+     * @return ArrayList of array with name and key for a specific list stored in the DB
      */
 
-    public ArrayList<walmartItemObject> getAllDataFromAndroidDB(){
+    public ArrayList<String[]> getAllDataFromAndroidDB(){
 
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<walmartItemObject> data = new ArrayList<walmartItemObject>();
+        ArrayList<String[]> data = new ArrayList<String[]>();
 
         String[] projection = {
-                GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_ID,
                 GroceryDBContract.GroceryList.COLUMN_NAME_TITLE,
-                GroceryDBContract.GroceryList.COLUMN_NAME_COST,
-                GroceryDBContract.GroceryList.COLUMN_NAME_IMAGE,
-                GroceryDBContract.GroceryList.COLUMN_NAME_TOTAL_ORDER
+                GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY
         };
 
         String sortOrder =
@@ -110,7 +102,7 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
         );
 
         while(c.moveToNext()){
-            walmartItemObject item = new walmartItemObject(c.getInt(0),c.getString(1),c.getDouble(2),c.getString(3),c.getInt(4));
+            String[] item = {c.getString(0), c.getString(1)};
             data.add(item);
         };
         c.close();
@@ -120,21 +112,21 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
 
     /**
      * delete grocery list item stored in android DB
-     * @param itemID unique ID that represents a particular row/grocery item
+     * @param key unique ID that represents a particular row/grocery item
      * @return boolean value representing if delete was succesfull or not
      */
     // Need to check this mehod once UI is ready as String itemID compared rather than INT.
-    public boolean deleteItem(int itemID) {
+    public boolean deleteItem(String key) {
 
         boolean result = false;
         String query = "Select * FROM " + GroceryDBContract.GroceryList.TABLE_NAME ;
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor c = db.rawQuery(query, null);
-        String StringItemID = "" + itemID;
+        String itemKey = "" + key;
 
         if (c.moveToNext()) {
-            String[] value = {StringItemID};
-            db.delete(GroceryDBContract.GroceryList.TABLE_NAME, GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_ID+ " = ?" ,value);
+            String[] value = {itemKey};
+            db.delete(GroceryDBContract.GroceryList.TABLE_NAME, GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY+ " = ?" ,value);
             c.close();
             result = true;
         }
@@ -154,18 +146,18 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
 
     /**
      * delete grocery list item stored in android DB
-     * @param itemID unique ID that represents a particular row/grocery item
-     * @return walmartItemObject object
+     * @param itemKey unique ID that represents a particular row/grocery item
+     * @return String[] with listTitle and listKey
      */
-    public walmartItemObject findByID(int itemID){
-        String query = "Select * FROM " + GroceryDBContract.GroceryList.TABLE_NAME + " WHERE " + GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_ID + " =  \"" + itemID + "\"";
+    public String[] findByID(String itemKey){
+        String query = "Select * FROM " + GroceryDBContract.GroceryList.TABLE_NAME + " WHERE " + GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY + " =  \"" + itemKey + "\"";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(query, null);
-        walmartItemObject item;
-
+        String[] item = new String[2];
         if (c.moveToFirst()) {
             c.moveToFirst();
-            item = new walmartItemObject(c.getInt(0),c.getString(1),c.getDouble(2),c.getString(3),c.getInt(4));
+            item[0]= c.getString(0);
+            item[1]= c.getString(1);
             c.close();
         } else {
             item = null;
