@@ -5,4 +5,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_json_reply_test">JsonReplyTest</string>
+
+    <string name="sync_account_type">geocerycodeu.example.com</string>
+    <string name="content_authority">com.example.geocerycodeu.geocerycodeu</string>
+
+    <string name="user_key">USER_KEY</string>
 </resources>

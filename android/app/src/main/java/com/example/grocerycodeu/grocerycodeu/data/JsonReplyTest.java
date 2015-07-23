@@ -1,4 +1,4 @@
-package com.example.grocerycodeu.grocerycodeu;
+package com.example.grocerycodeu.grocerycodeu.data;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -7,15 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
+
+import com.example.grocerycodeu.grocerycodeu.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class JsonReplyTest extends ActionBarActivity {

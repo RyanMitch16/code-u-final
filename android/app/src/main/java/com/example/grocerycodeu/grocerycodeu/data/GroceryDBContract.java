@@ -1,4 +1,4 @@
-package com.example.grocerycodeu.grocerycodeu;
+package com.example.grocerycodeu.grocerycodeu.data;
 
 import android.provider.BaseColumns;
 

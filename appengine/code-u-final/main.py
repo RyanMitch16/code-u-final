@@ -29,7 +29,6 @@ class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('Hello world!')
 
-
 class UserCreateHandler(webapp2.RequestHandler):
     def get(self):
         email = self.request.get('email')
@@ -61,6 +60,25 @@ class UserCreateHandler(webapp2.RequestHandler):
         self.response.set_status(201)
         self.response.write(user_key)
 
+class UserLoginHandler(webapp2.RequestHandler):
+    def get(self):
+        email = self.request.get('email')
+    
+        #Check if email is not empty
+        if (email == ""):
+            self.response.set_status(400)
+                self.response.write("Email not provided")
+                return
+
+        user = User.query(User.email == email).fetch()
+        if (len(user) == 0):
+            self.response.set_status(406)
+            self.response.write("User does not exist")
+            return
+
+        #Respond with the user key
+        self.response.set_status(201)
+        self.response.write(user.urlsafe())
 
 class ItemListCreateHandler(webapp2.RequestHandler):
     def get(self):
@@ -214,6 +232,7 @@ class ItemListGetHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/user/create', UserCreateHandler),
+    ('/user/login', UserLoginHandler)
     ('/user/lists', ItemListGetAllHandler),
     ('/list/create',ItemListCreateHandler),
     ('/list/edit',ItemListEditHandler),

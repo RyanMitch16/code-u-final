@@ -1,4 +1,4 @@
-package com.example.grocerycodeu.grocerycodeu;
+package com.example.grocerycodeu.grocerycodeu.data;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.example.grocerycodeu.grocerycodeu.R;
 
 
 public class DataBaseTestScreen extends ActionBarActivity {
