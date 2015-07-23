@@ -33,7 +33,7 @@ Returns the lists the user can access and their names in a JSON format
 ```
 
 ###How to update elements in a list
-http://code-u-final.appspot.com/list/edit?user_key=[USER_KEY]&list_name=[LIST_NAME]&content=[CHANGED_CONTENT]
+http://code-u-final.appspot.com/list/edit?user_key=[USER_KEY]&list_key=[LIST_KEY]&changed_content=[CHANGED_CONTENT]
 
 The changed content is a JSON string that represnets what is being added to the list and deleted from the list. As an example:
 
@@ -70,7 +70,7 @@ When passed as the changed content, this will add two items to the item list. Th
 ```
 
 ###How to get the list of items
-http://code-u-final.appspot.com/list/get?user_key=[USER_KEY]&list_name=[LIST_NAME]
+http://code-u-final.appspot.com/list/get?user_key=[USER_KEY]&list_key=[LIST_KEY]
 
 This returns the list of items in a json format:
 
