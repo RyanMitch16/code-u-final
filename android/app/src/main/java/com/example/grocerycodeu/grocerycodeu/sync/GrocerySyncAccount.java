@@ -2,16 +2,14 @@ package com.example.grocerycodeu.grocerycodeu.sync;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.example.grocerycodeu.grocerycodeu.R;
 
-public class UserSyncAccount{
+public class GrocerySyncAccount {
 
-    public final String LOG_TAG = UserSyncAccount.class.getSimpleName();
+    public final String LOG_TAG = GrocerySyncAccount.class.getSimpleName();
 
     /**
      * Gets the application account or creates the account if it does not exist.

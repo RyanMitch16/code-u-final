@@ -13,7 +13,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-public class UserSyncAdapter extends AbstractThreadedSyncAdapter {
+public class GrocerySyncAdapter extends AbstractThreadedSyncAdapter {
 
     public static final String BASE_URL = "http://code-u-final.appspot.com/";
 
@@ -23,7 +23,7 @@ public class UserSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public static final String TAG_EMAIL = "EMAIL";
 
-    public UserSyncAdapter(Context context, boolean autoInitialize) {
+    public GrocerySyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
 
@@ -31,7 +31,7 @@ public class UserSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
 
-        Log.d("TESTXXX","Perform");
+        /*Log.d("TESTXXX","Perform");
         try {
             switch (extras.getInt(TAG_OPCODE)) {
                 case OPCODE_USER_CREATE:
@@ -42,11 +42,11 @@ public class UserSyncAdapter extends AbstractThreadedSyncAdapter {
         }
         catch (Exception e){
 
-        }
+        }*/
 
     }
 
-    public String createUser(Bundle extras) throws IOException{
+    /*public String createUser(Bundle extras) throws IOException{
 
         Uri url = Uri.parse(BASE_URL).buildUpon()
                 .appendPath("user")
@@ -59,7 +59,8 @@ public class UserSyncAdapter extends AbstractThreadedSyncAdapter {
         //Retrieve the user key
         HttpURLConnection connection = HttpRequest.get(url);
         return HttpRequest.getContentString(connection);
-    }
+    }*/
+
 
 
 

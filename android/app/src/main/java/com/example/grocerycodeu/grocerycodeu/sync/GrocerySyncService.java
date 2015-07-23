@@ -7,14 +7,14 @@ import android.util.Log;
 
 public class GrocerySyncService extends Service {
     private static final Object sSyncAdapterLock = new Object();
-    private static UserSyncAdapter sSunshineSyncAdapter = null;
+    private static GrocerySyncAdapter sSunshineSyncAdapter = null;
 
     @Override
     public void onCreate() {
         Log.d("TestXXX", "onCreate - GroceySyncService");
         synchronized (sSyncAdapterLock) {
             if (sSunshineSyncAdapter == null) {
-                sSunshineSyncAdapter = new UserSyncAdapter(getApplicationContext(), true);
+                sSunshineSyncAdapter = new GrocerySyncAdapter(getApplicationContext(), true);
             }
         }
     }

@@ -2,7 +2,6 @@ package com.example.grocerycodeu.grocerycodeu.sync;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.util.Log;
@@ -15,11 +14,11 @@ public class UserSyncAdapterTest extends AndroidTestCase {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-        bundle.putInt(UserSyncAdapter.TAG_OPCODE, UserSyncAdapter.OPCODE_USER_CREATE);
-        bundle.putString(UserSyncAdapter.TAG_EMAIL, "ryanmitch200@gmail.com");
+        bundle.putInt(GrocerySyncAdapter.TAG_OPCODE, GrocerySyncAdapter.OPCODE_USER_CREATE);
+        bundle.putString(GrocerySyncAdapter.TAG_EMAIL, "ryanmitch200@gmail.com");
 
 
-        Account account = UserSyncAccount.getSyncAccount(getContext());
+        Account account = GrocerySyncAccount.getSyncAccount(getContext());
 
         ContentResolver.setIsSyncable(account,
                 getContext().getString(R.string.content_authority), 1);

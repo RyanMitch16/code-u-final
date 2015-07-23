@@ -5,6 +5,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+/**
+ * Just a dummy provider for now so we can use the sync adapter
+ */
 public class GroceryProvider extends ContentProvider{
 
     @Override
