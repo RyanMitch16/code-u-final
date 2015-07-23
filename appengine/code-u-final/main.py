@@ -16,8 +16,8 @@
 #
 import webapp2
 
-import json
-from webapp2_extras import json as webapp2_json
+import json from webapp2_extras
+import json as webapp2_json
 
 from google.appengine.ext import ndb
 
@@ -54,7 +54,6 @@ class UserCreateHandler(webapp2.RequestHandler):
         #Add the new user to the database
         user = User(email=email,item_lists=webapp2_json.encode(lists))
         user_key = (user.put()).urlsafe()
-
 
         #Respond with the user key
         self.response.set_status(201)
@@ -98,13 +97,23 @@ class ItemListCreateHandler(webapp2.RequestHandler):
             self.response.write("The user does not exist")
             return
         
-        
+        # Checks if list already added, if so add adds a '(#)' like windows for new folders
+
+        # TODO: 
+        #   Not checking for same user. 
+        #   Need to turn the item_lists into map (pref) or array and check membership
+        existing_list = ItemList.query(ItemList.name == name).fetch()
+        if (len(existing_user) > 0):
+            duplicateNumber = len(existing_user)
+            suffix = " (" + duplicateNumber + " )"
+            name += suffix
+
         #Set the list to empty
         list_content = {
             "itemIDCount" : 0,
             "items" : []
         }
-        
+
         #Add the new item list to the database
         item_list = ItemList(name=name, content=webapp2_json.encode(list_content))
         item_list_key = (item_list.put()).urlsafe()
