@@ -40,6 +40,8 @@ public class DataBaseTestScreen extends ActionBarActivity {
 
     public void startJson(View view){
         Log.e("Intent Status", "Intent Loaded");
+        GroceryDBHelper dbHelper = new GroceryDBHelper(this);
+        dbHelper.clearDatabase();
         Intent intent = new Intent(this, JsonReplyTest.class);
         startActivity(intent);
     }

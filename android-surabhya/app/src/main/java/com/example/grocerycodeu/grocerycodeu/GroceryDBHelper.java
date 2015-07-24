@@ -15,7 +15,7 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
 
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 7;
     static final String DATABASE_NAME = "groceryapp.db";
 
 
@@ -33,11 +33,21 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
      */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        final String SQL_CREATE_MENU_TABLE = "CREATE TABLE " + GroceryDBContract.GroceryList.TABLE_NAME + " (" +
+        final String SQL_CREATE_GROCERY_LIST_TABLE = "CREATE TABLE " + GroceryDBContract.GroceryList.TABLE_NAME + " (" +
                 GroceryDBContract.GroceryList.COLUMN_NAME_TITLE + " TEXT NOT NULL, " +
-                GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY + " TEXT NOT NULL " +
+                GroceryDBContract.GroceryList.COLUMN_NAME_ENTRY_KEY + " TEXT PRIMARY KEY  " +
                 " )";
-        sqLiteDatabase.execSQL(SQL_CREATE_MENU_TABLE);
+
+        final String SQL_CREATE_ITEM_LIST_TABLE = "CREATE TABLE " + GroceryDBContract.ItemList.TABLE_NAME + " (" +
+                GroceryDBContract.ItemList.COLUMN_NAME_ID + " TEXT PRIMARY KEY , " +
+                GroceryDBContract.ItemList.COLUMN_NAME_ENTRY_KEY + " TEXT NOT NULL, " +
+                GroceryDBContract.ItemList.COLUMN_NAME_ITEM_NAME + " TEXT NOT NULL, " +
+                GroceryDBContract.ItemList.COLUMN_NAME_ITEM_COST + " REAL NULL, " +
+                GroceryDBContract.ItemList.COLUMN_NAME_ITEM_QUANTITY + " INTEGER NOT NULL " +
+                " )";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_GROCERY_LIST_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_ITEM_LIST_TABLE);
     }
 
     /**
@@ -49,6 +59,7 @@ public class GroceryDBHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + GroceryDBContract.GroceryList.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + GroceryDBContract.ItemList.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 

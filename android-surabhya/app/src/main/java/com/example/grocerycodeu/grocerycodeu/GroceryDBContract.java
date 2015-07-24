@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  */
 public class GroceryDBContract {
 
-    public GroceryDBContract(){
+    public GroceryDBContract() {
 
     }
 
@@ -17,4 +17,12 @@ public class GroceryDBContract {
         public static final String COLUMN_NAME_ENTRY_KEY = "entrykey";
     }
 
+    public static abstract class ItemList implements BaseColumns {
+        public static final String TABLE_NAME = "itemlist";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_ENTRY_KEY = "entrykey";
+        public static final String COLUMN_NAME_ITEM_NAME = "itemname";
+        public static final String COLUMN_NAME_ITEM_COST = "itemcost";
+        public static final String COLUMN_NAME_ITEM_QUANTITY = "itemquantity";
+    }
 }

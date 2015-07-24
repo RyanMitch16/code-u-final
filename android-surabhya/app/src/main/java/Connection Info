@@ -40,7 +40,7 @@ http://code-u-final.appspot.com/list/get?user_key= ag5zfmNvZGUtdS1maW5hbHIRCxIEV
 ###How to update elements in a list ———— NOT WORKING
 http://code-u-final.appspot.com/list/edit?user_key=[USER_KEY]&list_key=[LIST_KEY]&changed_content=[CHANGED_CONTENT]
 
-http://code-u-final.appspot.com/list/edit?user_key=ag5zfmNvZGUtdS1maW5hbHIRCxIEVXNlchiAgICAr8iACgw&list_key=ag5zfmNvZGUtdS1maW5hbHIVCxIISXRlbUxpc3QYgICAgICAgAsM&changed_content={"items":[{"_id":"a0","_op":"add","item-quantity":"2","name":"Pillow"}]}
+http://code-u-final.appspot.com/list/edit?user_key=ag5zfmNvZGUtdS1maW5hbHIRCxIEVXNlchiAgICAr8iACgw&list_key=ag5zfmNvZGUtdS1maW5hbHIVCxIISXRlbUxpc3QYgICAgICAgAsM&changed_content={"items":[{"_id":"a0","_op":"add","item-quantity":"3","name":"Coke”}]}
 
 
 
