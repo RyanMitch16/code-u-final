@@ -24,7 +24,7 @@ public class JsonReplyTest extends ActionBarActivity {
 
     // URL to get JSON
     private static String urlGetUserList = "http://code-u-final.appspot.com/user/lists?user_key=ag5zfmNvZGUtdS1maW5hbHIRCxIEVXNlchiAgICAgICACgw";
-    private static String urlGetUserItem = "http://code-u-final.appspot.com/list/get?user_key=ag5zfmNvZGUtdS1maW5hbHIRCxIEVXNlchiAgICAr8iACgw&list_key=ag5zfmNvZGUtdS1maW5hbHIVCxIISXRlbUxpc3QYgICAgICAgAsM";
+    private static String urlGetUserItem = "http://code-u-final.appspot.com/list/get?user_key=ag5zfmNvZGUtdS1maW5hbHIRCxIEVXNlchiAgICAr8iACgw&list_key=";
 
     // JSON Node names
     private static final String TAG_GROCERY_LIST = "itemLists";
@@ -98,10 +98,10 @@ public class JsonReplyTest extends ActionBarActivity {
 
             if (jsonStrGroceryList != null) {
                 try {
-                    JSONObject jsonObj = new JSONObject(jsonStrGroceryList);
+                    JSONObject jsonObjList = new JSONObject(jsonStrGroceryList);
 
                     // Getting JSON Array node
-                    groceryListJsonArray = jsonObj.getJSONArray(TAG_GROCERY_LIST);
+                    groceryListJsonArray = jsonObjList.getJSONArray(TAG_GROCERY_LIST);
 
                     // looping through All Contacts
                     for (int i = 0; i < groceryListJsonArray.length(); i++) {
@@ -110,43 +110,47 @@ public class JsonReplyTest extends ActionBarActivity {
                         String listName = c.getString(TAG_LIST_NAME);
                         String listKey = c.getString(TAG_LIST_KEY);
 
+
                         // Add data to database
                         dbHelper.addDataFromCloud(listName, listKey);
+
+                        urlGetUserItem  += listKey;
+                        String jsonStrItemList = sh.makeServiceCall(urlGetUserItem, ServiceHandler.GET);
+
+                        Log.d("Response: ", "> " + jsonStrItemList);
+
+                        if (jsonStrItemList != null) {
+                            try {
+                                JSONObject jsonObjItem = new JSONObject(jsonStrItemList);
+
+                                // Getting JSON Array node
+                                itemListJsonArray = jsonObjItem.getJSONArray(TAG_ITEM_LIST);
+                                Log.e("ServiceHandler", itemListJsonArray.length()+"");
+                                // looping through All Contacts
+                                for (int j = 0; j < itemListJsonArray.length(); j++) {
+                                    JSONObject cursor = itemListJsonArray.getJSONObject(i);
+
+                                    String itemID = cursor.getString(TAG_ITEM_ID);
+                                    String itemName = cursor.getString(TAG_ITEM_NAME);
+                                    int itemQuantity = cursor.getInt(TAG_ITEM_QUANTITY);
+
+                                    // Add data to database
+                                    dbHelper.addDataFromCloud(itemID,listKey,itemName,0.00,itemQuantity);
+                                    Log.e("OUTPUT", itemID + " " + itemName + " " + itemQuantity);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Log.e("ServiceHandler", "Couldn't get any data from the item list url");
+                        }
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             } else {
                 Log.e("ServiceHandler", "Couldn't get any data from the grocery list url");
-            }
-
-            String jsonStrItemList = sh.makeServiceCall(urlGetUserItem, ServiceHandler.GET);
-
-            Log.d("Response: ", "> " + jsonStrItemList);
-
-            if (jsonStrItemList != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStrItemList);
-
-                    // Getting JSON Array node
-                    itemListJsonArray = jsonObj.getJSONArray(TAG_ITEM_LIST);
-                    Log.e("ServiceHandler", itemListJsonArray.length()+"");
-                    // looping through All Contacts
-                    for (int i = 0; i < itemListJsonArray.length(); i++) {
-                        JSONObject c = itemListJsonArray.getJSONObject(i);
-
-                        String itemID = c.getString(TAG_ITEM_ID);
-                        String itemName = c.getString(TAG_ITEM_NAME);
-                        int itemQuantity = c.getInt(TAG_ITEM_QUANTITY);
-
-                        // Add data to database
-                        Log.e("OUTPUT", itemID + " " + itemName + " " + itemQuantity);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the item list url");
             }
 
             return null;
@@ -157,7 +161,7 @@ public class JsonReplyTest extends ActionBarActivity {
             // Dismiss the progress dialog
             if (pDialog.isShowing()) {
                 pDialog.dismiss();
-                ArrayList<String[]> data = dbHelper.getAllDataFromAndroidDB();
+                ArrayList<String[]> data = dbHelper.getAllListFromAndroidDB();
                 for (String[] x: data){
                     Log.e("NAME:",x[0]);
                     Log.e("KEY:",x[1]);
