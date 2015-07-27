@@ -21,8 +21,6 @@ import com.example.grocerycodeu.grocerycodeu.ui.FloatingButtonView;
 
 public class MainActivity extends ActionBarActivity {
 
-    private ListView numberList;
-    ArrayList<String> dummyData = new ArrayList<String>();
 
     // Creates fake items
     @Override
@@ -30,7 +28,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.grocery_list_activity);
 
-        numberList = (ListView) findViewById(R.id.grocery_list_view);
+        /*ListView numberList = (ListView) findViewById(R.id.grocery_list_view);
 
         for (int i = 0; i < 5; ++i) {
             dummyData.add("Foo " + i + " Bar");
@@ -38,7 +36,7 @@ public class MainActivity extends ActionBarActivity {
 
         FloatingButtonView addButtonView = new FloatingButtonView(this,200,
                 getResources().getColor(R.color.material_accent),
-                getResources().getDrawable(R.mipmap.ic_launcher));
+                getResources().getDrawable(R.mipmap.ic_launcher));*/
 
     }
 }
