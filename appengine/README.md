@@ -1,18 +1,18 @@
-#AppEngine API Documentation
+# AppEngine API Documentation
 
 (Everything is HTTP Get for testing reasons now put that will change to Post soon)
 
-###How to create new users
+### How to create new users
 http://code-u-final.appspot.com/user/create?email=[EMAIL_ADDRESS]
 
 Returns the key that represents the user on sucessful completion (Status code 201)
 
-###How to create a new list
+### How to create a new list
 http://code-u-final.appspot.com/list/create?user_key=[USER_KEY]&list_name=[LIST_NAME]
 
 Returns the key that represents the list on sucessful completion (Status code 201)
 
-###How to get all the lists a user has access to
+### How to get all the lists a user has access to
 http://code-u-final.appspot.com/user/lists?user_key=[USER_KEY]
 
 Returns the lists the user can access and their names in a JSON format
@@ -32,7 +32,7 @@ Returns the lists the user can access and their names in a JSON format
 }
 ```
 
-###How to update elements in a list
+### How to update elements in a list
 http://code-u-final.appspot.com/list/edit?user_key=[USER_KEY]&list_key=[LIST_KEY]&changed_content=[CHANGED_CONTENT]
 
 The changed content is a JSON string that represnets what is being added to the list and deleted from the list. As an example:
@@ -69,7 +69,7 @@ When passed as the changed content, this will add two items to the item list. Th
 }
 ```
 
-###How to get the list of items
+### How to get the list of items
 http://code-u-final.appspot.com/list/get?user_key=[USER_KEY]&list_key=[LIST_KEY]
 
 This returns the list of items in a json format:
