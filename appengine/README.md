@@ -7,6 +7,11 @@ http://code-u-final.appspot.com/user/create?email=[EMAIL_ADDRESS]
 
 Returns the key that represents the user on sucessful completion (Status code 201)
 
+### Changing user email
+code-u-final.appspot.com/user/update?user_key=[USER_KEY]&new_email=[NEW_EMAIL]
+
+Changes user emails to one that that's NOT already on the database
+
 ### How to create a new list
 http://code-u-final.appspot.com/list/create?user_key=[USER_KEY]&list_name=[LIST_NAME]
 
@@ -91,5 +96,8 @@ This returns the list of items in a json format:
 }
 ```
 
+### Deleting users and lists
+Users: code-u-final.appspot.com/user/delete?user_key=[USER_KEY]
+Lists: code-u-final.appspot.com/list/delete?list_key=[LIST_KEY]
 
-    
+Returns either a 400 with "This user/list does not exist" at the end, or "User/List successfully deleted"
