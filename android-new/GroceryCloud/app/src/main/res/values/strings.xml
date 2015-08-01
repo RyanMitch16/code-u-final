@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Grocery Cloud</string>
+
+    <string name="sync_account_type">grocerycloud.example.com</string>
+    <string name="content_authority">com.example.geocerycodeu.grocerycloud</string>
+
+</resources>
