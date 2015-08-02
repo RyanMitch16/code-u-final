@@ -1,8 +1,10 @@
 package com.example.grocerycodeu.grocerycloud.ui;
 
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,10 +14,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.grocerycodeu.grocerycloud.MainActivity;
 import com.example.grocerycodeu.grocerycloud.R;
 import com.example.grocerycodeu.grocerycloud.UserLoginActivity;
+import com.example.grocerycodeu.grocerycloud.database.EntryDatabase;
+import com.example.grocerycodeu.grocerycloud.database.GroceryContract;
+import com.example.grocerycodeu.grocerycloud.sync.request.GroceryRequest;
+import com.example.grocerycodeu.grocerycloud.sync.request.HttpRequest;
 
-public class UserSignUpFragment extends Fragment {
+import java.io.IOException;
+import java.net.HttpURLConnection;
+
+public class UserSignUpFragment extends Fragment implements LoaderManager.LoaderCallbacks<HttpURLConnection> {
 
     public final static String EXTRA_MESSAGE = "com.example.grocerycodeu.grocerycloud.ui";
 
@@ -24,13 +34,15 @@ public class UserSignUpFragment extends Fragment {
     EditText txtPasswordRetype;
     EditText txtEmail;
     Button btnSignUp;
-    UserSignUpFragment UserSignUpFragmentThis = this;
 
     String username;
     String password;
     String repassword;
     String email;
     String popupmsg;
+
+    //Get a reference to this fragment
+    final UserSignUpFragment thisFragment = this;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,9 +53,6 @@ public class UserSignUpFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        //Get a reference to this fragment
-        final Fragment thisFragment = this;
 
         //Get the root view
         View rootView = inflater.inflate(R.layout.fragment_signup, container, false);
@@ -71,11 +80,13 @@ public class UserSignUpFragment extends Fragment {
 
                 //validate user input
                 if (validateAllUserInput()) {
+
+                    // create a new user
+                    Bundle args = new Bundle();
+                    getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
+
                     // inflate login page with the data
-                    Intent intent = new Intent(thisFragment.getActivity(), UserLoginActivity.class);
-                    String[] user_info = {username,password};
-                    intent.putExtra(EXTRA_MESSAGE, user_info);
-                    startActivity(intent);
+
                 } else {
                     Toast toast = Toast.makeText(getActivity(),
                             popupmsg, Toast.LENGTH_SHORT);
@@ -86,6 +97,69 @@ public class UserSignUpFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public Loader<HttpURLConnection> onCreateLoader(int id, Bundle args) {
+
+        return GroceryRequest.userCreate(getActivity(),
+                username,
+                password);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<HttpURLConnection> loader, HttpURLConnection data) {
+
+        try {
+            //Check if the response code is a success
+            int id = data.getResponseCode();
+            if (id >= 200 && id <300){
+
+                //Get the user key from the request
+                String userKey = HttpRequest.getContentString(data);
+
+                Log.d("Hello", "1");
+                //Check if the user exists in the database
+
+                EntryDatabase<GroceryContract.UserEntry> entryDatabase = GroceryContract.UserEntry.getDatabase();
+
+                GroceryContract.UserEntry users[] = entryDatabase.query(getActivity(),
+                        GroceryContract.UserEntry.COLUMN_USER_KEY + " = ?",
+                        new String[]{userKey},null);
+
+                Log.d("Hello", "2ss");
+                //Add the user to the database
+                if (users.length == 0){
+                    Log.d("Hello", "3");
+
+                    //Set the values of the user
+                    GroceryContract.UserEntry user = new GroceryContract.UserEntry(userKey,username, null);
+                    entryDatabase.put(getActivity(),user);
+                    Log.d("NewUser",user.userKey);
+                }
+
+
+                //Go to the login page after usr is created
+                Intent intent = new Intent(thisFragment.getActivity(), UserLoginActivity.class);
+                String[] user_info = {username,password};
+                intent.putExtra(EXTRA_MESSAGE, user_info);
+                startActivity(intent);
+            }
+            else{
+                Toast toast = Toast.makeText(getActivity(),
+                        "User with the given user name already exists.", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }catch (IOException e){
+            Log.d("Login",e.toString());
+        }
+
+        //Clean up so the request can be made again
+        getLoaderManager().destroyLoader(GroceryRequest.OPCODE_USER_CREATE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<HttpURLConnection> loader) {
     }
 
     public boolean validateAllUserInput() {
