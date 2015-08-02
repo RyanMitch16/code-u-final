@@ -84,9 +84,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                     // create a new user
                     Bundle args = new Bundle();
                     getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
-
-                    // inflate login page with the data
-
                 } else {
                     Toast toast = Toast.makeText(getActivity(),
                             popupmsg, Toast.LENGTH_SHORT);
@@ -189,10 +186,13 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         if (password.equals(repassword) && password.length() > 0) {
             return true;
         } else if (password.length()==0) {
-            popupmsg += "Please enter a password.";
+            popupmsg += "Please enter a password.\n";
 
-        } else {
-            popupmsg += "Please enter the password again, password mis-match.";
+        } else if (password.length() < 5) {
+        popupmsg += "Please enter a password that is 5 character long.\n";
+
+        }else {
+            popupmsg += "Please enter the password again, password mis-match.\n";
         }
         txtPassword.setText(null);
         txtPasswordRetype.setText(null);
@@ -214,7 +214,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         } else if (email.matches(Expn) && email.length() > 0) {
             return true;
         } else {
-            popupmsg += "Please re-enter a valid email address.";
+            popupmsg += "Please re-enter a valid email address.\n";
             txtEmail.setText(null);
             return false;
         }

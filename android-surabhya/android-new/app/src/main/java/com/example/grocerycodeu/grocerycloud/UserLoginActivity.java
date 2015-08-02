@@ -3,13 +3,14 @@ package com.example.grocerycodeu.grocerycloud;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.EditText;
 
 import com.example.grocerycodeu.grocerycloud.ui.UserLoginFragment;
 import com.example.grocerycodeu.grocerycloud.ui.UserSignUpFragment;
 
-public class UserLoginActivity extends Activity {
+public class UserLoginActivity extends ActionBarActivity {
 
     // Creates fake items
     @Override
