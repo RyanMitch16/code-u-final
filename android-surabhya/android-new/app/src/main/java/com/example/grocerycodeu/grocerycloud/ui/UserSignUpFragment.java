@@ -2,15 +2,21 @@ package com.example.grocerycodeu.grocerycloud.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,6 +30,7 @@ import com.example.grocerycodeu.grocerycloud.sync.request.HttpRequest;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 public class UserSignUpFragment extends Fragment implements LoaderManager.LoaderCallbacks<HttpURLConnection> {
 
@@ -33,6 +40,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     EditText txtPassword;
     EditText txtPasswordRetype;
     EditText txtEmail;
+    CheckBox findMe;
     Button btnSignUp;
 
     String username;
@@ -40,6 +48,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     String repassword;
     String email;
     String popupmsg;
+    boolean checked;
 
     //Get a reference to this fragment
     final UserSignUpFragment thisFragment = this;
@@ -48,6 +57,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         popupmsg = "";
+
     }
 
     @Override
@@ -62,6 +72,20 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         txtPassword = (EditText) rootView.findViewById(R.id.password_text_view);
         txtPasswordRetype = (EditText) rootView.findViewById(R.id.password_retype_text_view);
         txtEmail = (EditText) rootView.findViewById(R.id.email_text_view);
+
+        // Allow user to find by phone number
+        findMe = (CheckBox) rootView.findViewById(R.id.checkbox_sharing);
+        findMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                              @Override
+                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                                  checked = !checked;
+                                                  if (checked){
+                                                      Log.e("STATUS", "" + checked);
+                                                      readMyNumber();
+                                                  }
+                                              }
+                                          }
+        );
 
         //Find the login button
         btnSignUp = (Button) rootView.findViewById(R.id.sign_up_button);
@@ -110,7 +134,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         try {
             //Check if the response code is a success
             int id = data.getResponseCode();
-            if (id >= 200 && id <300){
+            if (id >= 200 && id < 300) {
 
                 //Get the user key from the request
                 String userKey = HttpRequest.getContentString(data);
@@ -122,33 +146,32 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
 
                 GroceryContract.UserEntry users[] = entryDatabase.query(getActivity(),
                         GroceryContract.UserEntry.COLUMN_USER_KEY + " = ?",
-                        new String[]{userKey},null);
+                        new String[]{userKey}, null);
 
                 Log.d("Hello", "2ss");
                 //Add the user to the database
-                if (users.length == 0){
+                if (users.length == 0) {
                     Log.d("Hello", "3");
 
                     //Set the values of the user
-                    GroceryContract.UserEntry user = new GroceryContract.UserEntry(userKey,username, null);
-                    entryDatabase.put(getActivity(),user);
-                    Log.d("NewUser",user.userKey);
+                    GroceryContract.UserEntry user = new GroceryContract.UserEntry(userKey, username, null);
+                    entryDatabase.put(getActivity(), user);
+                    Log.d("NewUser", user.userKey);
                 }
 
 
                 //Go to the login page after usr is created
                 Intent intent = new Intent(thisFragment.getActivity(), UserLoginActivity.class);
-                String[] user_info = {username,password};
+                String[] user_info = {username, password};
                 intent.putExtra(EXTRA_MESSAGE, user_info);
                 startActivity(intent);
-            }
-            else{
+            } else {
                 Toast toast = Toast.makeText(getActivity(),
                         "User with the given user name already exists.", Toast.LENGTH_SHORT);
                 toast.show();
             }
-        }catch (IOException e){
-            Log.d("Login",e.toString());
+        } catch (IOException e) {
+            Log.d("Login", e.toString());
         }
 
         //Clean up so the request can be made again
@@ -163,9 +186,9 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         boolean isusernamevaild = validateUserName();
         boolean ispasswordvalid = validatePassword();
         boolean isemailvalid = validateEmail();
-        if(isemailvalid && ispasswordvalid && isusernamevaild){
+        if (isemailvalid && ispasswordvalid && isusernamevaild) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -183,15 +206,15 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     }
 
     public boolean validatePassword() {
-        if (password.equals(repassword) && password.length() > 0) {
+        if (password.equals(repassword) && password.length() >= 5) {
             return true;
-        } else if (password.length()==0) {
+        } else if (password.length() == 0) {
             popupmsg += "Please enter a password.\n";
 
         } else if (password.length() < 5) {
-        popupmsg += "Please enter a password that is 5 character long.\n";
+            popupmsg += "Please enter a password that is 5 character long.\n";
 
-        }else {
+        } else {
             popupmsg += "Please enter the password again, password mis-match.\n";
         }
         txtPassword.setText(null);
@@ -219,4 +242,38 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
             return false;
         }
     }
+
+    public void readMyNumber(){
+        TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        String number = tm.getLine1Number();
+        Log.e("My Number", number + "");
+    }
+
+    public void readContacts() {
+        ContentResolver cr = getActivity().getContentResolver();
+        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, null);
+        Log.e("Length", "" + cur.getCount());
+        if (cur.getCount() > 0) {
+            while (cur.moveToNext()) {
+                String id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                if (Integer.parseInt(cur.getString(cur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+                    System.out.println("name : " + name + ", ID : " + id);
+
+                    // get the phone number
+                    Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{id}, null);
+                    while (pCur.moveToNext()) {
+                        String phone = pCur.getString(
+                                pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        Log.e("phone", " " + phone);
+                    }
+                    pCur.close();
+                }
+            }
+        }
+    }
+
 }

@@ -50,13 +50,17 @@
             android:inputType="textEmailAddress"
             android:hint="Email (optional)" />
 
+        <CheckBox android:id="@+id/checkbox_sharing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Allow other users to find me by my phone number." />
+
         <Button
             android:id="@+id/sign_up_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.2"
-            android:text="Sign Up"
-            android:onClick="getAllUserData"/>
+            android:text="Sign Up"/>
 
     </LinearLayout>
 
