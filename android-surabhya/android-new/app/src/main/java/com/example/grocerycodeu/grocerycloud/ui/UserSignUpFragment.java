@@ -72,7 +72,7 @@ public class UserSignUpFragment extends Fragment {
                 //validate user input
                 if (validateAllUserInput()) {
                     // inflate login page with the data
-                    Intent intent = new Intent(getActivity(), UserLoginFragment.class);
+                    Intent intent = new Intent(thisFragment.getActivity(), UserLoginActivity.class);
                     String[] user_info = {username,password};
                     intent.putExtra(EXTRA_MESSAGE, user_info);
                     startActivity(intent);
