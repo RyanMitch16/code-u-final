@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 package com.example.grocerycodeu.grocerycloud.ui;
 
 import android.app.Fragment;
@@ -300,4 +298,3 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     }
 
 }
->>>>>>> parent of 65ecc0b... FAILED!! tried sending email via android
