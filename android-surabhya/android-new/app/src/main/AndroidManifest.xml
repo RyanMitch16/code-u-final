@@ -36,7 +36,8 @@
 
         <activity
             android:name=".UserSignUpActivity"
-            android:parentActivityName=".UserLoginActivity" >
+            android:parentActivityName=".UserLoginActivity"
+            android:label="@string/sign_up_page">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".UserLoginActivity" />
