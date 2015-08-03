@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.grocerycodeu.grocerycloud.MainActivity;
 import com.example.grocerycodeu.grocerycloud.R;
 import com.example.grocerycodeu.grocerycloud.UserLoginActivity;
 import com.example.grocerycodeu.grocerycloud.database.EntryDatabase;
@@ -29,6 +30,7 @@ import com.example.grocerycodeu.grocerycloud.sync.request.HttpRequest;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
 public class UserSignUpFragment extends Fragment implements LoaderManager.LoaderCallbacks<HttpURLConnection> {
 
@@ -46,8 +48,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     String repassword;
     String email;
     String popupmsg;
-    boolean checkedMyNumber;
-    boolean checkedShareContact;
+    boolean checked;
 
     //Get a reference to this fragment
     final UserSignUpFragment thisFragment = this;
@@ -56,7 +57,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         popupmsg = "";
-        checkedMyNumber = checkedShareContact = false;
 
     }
 
@@ -73,31 +73,19 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         txtPasswordRetype = (EditText) rootView.findViewById(R.id.password_retype_text_view);
         txtEmail = (EditText) rootView.findViewById(R.id.email_text_view);
 
-        // Allow user to his/her  phone number
+        // Allow user to find by phone number
         findMe = (CheckBox) rootView.findViewById(R.id.checkbox_sharing);
         findMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                               @Override
                                               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                  checkedMyNumber = !checkedMyNumber;
-                                                  if (checkedMyNumber){
-                                                      Log.e("STATUS", "" + checkedMyNumber);
+                                                  checked = !checked;
+                                                  if (checked){
+                                                      Log.e("STATUS", "" + checked);
                                                       readMyNumber();
                                                   }
                                               }
                                           }
         );
-
-        // Allow user to share contact list
-        findMe = (CheckBox) rootView.findViewById(R.id.checkbox_sharing_contacts);
-        findMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                              @Override
-                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                  checkedShareContact = !checkedShareContact;
-                                                  Log.e("STATUS", "" + checkedShareContact);
-                                              }
-                                          }
-        );
-
 
         //Find the login button
         btnSignUp = (Button) rootView.findViewById(R.id.sign_up_button);
@@ -119,12 +107,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
 
                     // create a new user
                     Bundle args = new Bundle();
-                    if(checkedShareContact){
-                        readContacts();
-                        getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
-                    }else {
-                        getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
-                    }
+                    getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
                 } else {
                     Toast toast = Toast.makeText(getActivity(),
                             popupmsg, Toast.LENGTH_SHORT);
@@ -263,7 +246,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     public void readMyNumber(){
         TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
         String number = tm.getLine1Number();
-        // I guess a code block must be added to add phoen number to db
         Log.e("My Number", number + "");
     }
 
@@ -286,9 +268,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                     while (pCur.moveToNext()) {
                         String phone = pCur.getString(
                                 pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-                        // I guess a code block must be added to add phoen number to db
-
                         Log.e("phone", " " + phone);
                     }
                     pCur.close();
