@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
@@ -25,7 +24,6 @@ import com.example.grocerycodeu.grocerycloud.R;
 import com.example.grocerycodeu.grocerycloud.UserLoginActivity;
 import com.example.grocerycodeu.grocerycloud.database.EntryDatabase;
 import com.example.grocerycodeu.grocerycloud.database.GroceryContract;
-import com.example.grocerycodeu.grocerycloud.sync.request.GmailSender;
 import com.example.grocerycodeu.grocerycloud.sync.request.GroceryRequest;
 import com.example.grocerycodeu.grocerycloud.sync.request.HttpRequest;
 
@@ -81,7 +79,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                                               @Override
                                               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                   checkedMyNumber = !checkedMyNumber;
-                                                  if (checkedMyNumber) {
+                                                  if (checkedMyNumber){
                                                       Log.e("STATUS", "" + checkedMyNumber);
                                                       readMyNumber();
                                                   }
@@ -121,10 +119,10 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
 
                     // create a new user
                     Bundle args = new Bundle();
-                    if (checkedShareContact) {
+                    if(checkedShareContact){
                         readContacts();
                         getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
-                    } else {
+                    }else {
                         getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
                     }
                 } else {
@@ -252,13 +250,9 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                         + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
 
         if (email.length() == 0) {
-            popupmsg += "Please enter an email address.\n";
-            return false;
+            return true;
         } else if (email.matches(Expn) && email.length() > 0) {
-            boolean value = sendEmail();
-            Log.e("Check Point", "Its here");
-            Log.e("Send Email", "" + value);
-            return value;
+            return true;
         } else {
             popupmsg += "Please re-enter a valid email address.\n";
             txtEmail.setText(null);
@@ -266,36 +260,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         }
     }
 
-    public boolean sendEmail() {
-        Log.e("Send email", "Tried");
-        String[] TO = {"surabhya.aryal@gmail.com"};
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-
-        emailIntent.setData(Uri.parse("mailto:"));
-        emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Your subject");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "Email message goes here");
-
-        try {
-            GmailSender sender = new GmailSender("gograspit@gmail.com", "GoGraspItCodeU2015");
-            sender.sendMail("Acknowledgment from Go Grasp It!",
-                    "Hello Surabhya," +
-                            "   Thank you for downloading Go Grasp It. Get ready for a new shoping experience." +
-                            "If you did not sing up please click on the link below else ingnore it.\n\n\n" +
-                            "Regards," +
-                            "Go Grasp It Team" +
-                            "Silicon Valley, CA",
-                    "gograspit@gmail.com",
-                    "surabhya.aryal@gmail.com@gmail.com");
-        } catch (Exception e) {
-            Log.e("SendMail", e.getMessage(), e);
-            popupmsg += "Enter a valid email address.Email address doesnot exist.\n";
-            return false;
-        }
-    }
-
-    public void readMyNumber() {
+    public void readMyNumber(){
         TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
         String number = tm.getLine1Number();
         // I guess a code block must be added to add phoen number to db
