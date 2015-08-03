@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.grocerycodeu.grocerycloud.GMailSender;
 import com.example.grocerycodeu.grocerycloud.R;
 import com.example.grocerycodeu.grocerycloud.UserLoginActivity;
 import com.example.grocerycodeu.grocerycloud.database.EntryDatabase;
@@ -253,7 +254,18 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
             popupmsg += "Please enter an email address.\n";
             return false;
         } else if (email.matches(Expn) && email.length() > 0) {
-            return true;
+            try {
+                GMailSender sender = new GMailSender("gograspit@gmail.com", "GoGraspItCodeU2015");
+                sender.sendMail("This is Subject",
+                        "This is Body",
+                        "gograspit@gmail.com",
+                        "surabhya.aryal@gmail.com");
+                Log.e("Check point", "Get inside the gamil sender");
+                return true;
+            } catch (Exception e) {
+                Log.e("SendMail", e.getMessage(), e);
+                return false;
+            }
         } else {
             popupmsg += "Please re-enter a valid email address.\n";
             txtEmail.setText(null);
