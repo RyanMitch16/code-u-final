@@ -79,7 +79,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                                               @Override
                                               public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                                   checkedMyNumber = !checkedMyNumber;
-                                                  if (checkedMyNumber){
+                                                  if (checkedMyNumber) {
                                                       Log.e("STATUS", "" + checkedMyNumber);
                                                       readMyNumber();
                                                   }
@@ -119,10 +119,10 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
 
                     // create a new user
                     Bundle args = new Bundle();
-                    if(checkedShareContact){
+                    if (checkedShareContact) {
                         readContacts();
                         getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
-                    }else {
+                    } else {
                         getLoaderManager().initLoader(GroceryRequest.OPCODE_LIST_CREATE, args, thisFragment).forceLoad();
                     }
                 } else {
@@ -250,7 +250,8 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                         + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
 
         if (email.length() == 0) {
-            return true;
+            popupmsg += "Please enter an email address.\n";
+            return false;
         } else if (email.matches(Expn) && email.length() > 0) {
             return true;
         } else {
@@ -260,7 +261,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         }
     }
 
-    public void readMyNumber(){
+    public void readMyNumber() {
         TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
         String number = tm.getLine1Number();
         // I guess a code block must be added to add phoen number to db
