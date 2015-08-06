@@ -42,6 +42,7 @@ public class GroceryRequest{
                         .build();
 
                 //Attempt to create the user
+                Log.e("URL", url + "");
                 HttpURLConnection connection = null;
                 try {
                     //Make the request

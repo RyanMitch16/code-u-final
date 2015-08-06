@@ -6,7 +6,7 @@ import android.util.Log;
 /**
  * Created by saryal on 8/5/2015.
  */
-public class EmailAsyncTask extends AsyncTask<String, Void, Integer> {
+public class EmailAsyncTask extends AsyncTask<String, Void, Void> {
 
 
     protected void onPreExecute() {
@@ -14,20 +14,14 @@ public class EmailAsyncTask extends AsyncTask<String, Void, Integer> {
     }
 
     @Override
-    protected Integer doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         final EmailSender sender = new EmailSender();
         try {
-            if (sender.sendEmail(params[0], params[1])){
-                Log.e("Status", "Emai send");
-                return 1;
-            } else{
-                Log.e("Status", "Emai send");
-                return 0;
-            }
+            sender.sendEmail(params[0], params[1],params[2]);
         } catch (RuntimeException e) {
-            Log.e("SendMail", e.getMessage(), e);
-            return 0;
+            Log.e("RunTimeException", e.getMessage(), e);
         }
+        return null;
     }
 
     protected void onProgressUpdate() {

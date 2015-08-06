@@ -175,6 +175,15 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                     GroceryContract.UserEntry user = new GroceryContract.UserEntry(userKey, username, null);
                     entryDatabase.put(getActivity(), user);
                     Log.d("NewUser", user.userKey);
+                    try {
+                        String receiverEmail = email;
+                        new EmailAsyncTask().execute(receiverEmail,
+                                username,
+                                userKey);
+                        Log.e("Check point", "Get inside the gmail sender");
+                    } catch (Exception e) {
+                        Log.e("SendMail", e.getMessage(), e);
+                    }
                 }
 
 
@@ -183,6 +192,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                 String[] user_info = {username, password};
                 intent.putExtra(EXTRA_MESSAGE, user_info);
                 startActivity(intent);
+
             } else {
                 Toast toast = Toast.makeText(getActivity(),
                         "User with the given user name already exists.", Toast.LENGTH_SHORT);
@@ -251,23 +261,9 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                         + "([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
 
         if (email.length() == 0) {
-            popupmsg += "Please enter an email address.\n";
-            return false;
+            return true;
         } else if (email.matches(Expn) && email.length() > 0) {
-            try {
-                String receiverEmail = email;
-                int value = new EmailAsyncTask().execute(receiverEmail,
-                        username).get();
-                Log.e("Check point", "Get inside the gmail sender");
-                if (value == 1) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (Exception e) {
-                Log.e("SendMail", e.getMessage(), e);
-                return false;
-            }
+            return true;
         } else
 
         {

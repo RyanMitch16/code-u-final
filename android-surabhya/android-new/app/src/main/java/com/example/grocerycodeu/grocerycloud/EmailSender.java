@@ -20,7 +20,7 @@ public class EmailSender extends javax.mail.Authenticator {
 
     ;
 
-    public boolean sendEmail(String to, String username) {
+    public boolean sendEmail(String to, String username, String userKey) {
         Properties props = System.getProperties();
         String host = "smtp.gmail.com";
         String from = "gograspit@gmail.com";
@@ -31,11 +31,11 @@ public class EmailSender extends javax.mail.Authenticator {
             e.printStackTrace();
         }
         String pass = "GoGraspItCodeU2015";
-        String subject = "Welcome to APP_NAME family";
+        String subject = "Welcome to APP_NAME family :)";
         String body = "Hello " + username + "!\n\n"
                 + "A WELCOME MESSAGE \n" +
-                "IF YOU DIDN NOT SIGN UP FOR THE APP AND YOUR EMAIL IS USED THAN PLEASE REPLY TO THIS EMAIL AS SOON AS POSSIBLE \n" +
-                "HEY GUYS SNED A REPLY...GOT SOME SUPRISE FOR YOU!!!!\n\n" +
+                "IF YOU DIDN NOT SIGN UP FOR THE APP AND YOUR EMAIL IS USED THAN PLEASE CLICK ON THIS LINK HTTPS://SOMEUREL/" + userKey + "\n"
+                + "If you have any other questions. Please fell free to reply to this email. We will be more than happy to help you!!!!\n\n" +
                 "--------------------\n" +
                 "Regards,\n" +
                 "WHAT EVER THE APP NAME IS -- FAMILY";
