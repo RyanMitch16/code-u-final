@@ -168,7 +168,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
 
                 Log.d("Hello", "2ss");
                 //Add the user to the database
-                Log.e("Length Array", users.length + "");
                 if (users.length == 0) {
                     Log.d("Hello", "3");
 
@@ -176,7 +175,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                     GroceryContract.UserEntry user = new GroceryContract.UserEntry(userKey, username, null);
                     entryDatabase.put(getActivity(), user);
                     Log.d("NewUser", user.userKey);
-
                     try {
                         String receiverEmail = email;
                         new EmailAsyncTask().execute(receiverEmail,
