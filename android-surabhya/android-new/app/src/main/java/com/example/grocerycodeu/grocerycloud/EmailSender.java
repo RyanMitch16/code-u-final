@@ -36,7 +36,7 @@ public class EmailSender extends javax.mail.Authenticator {
                 + "A WELCOME MESSAGE \n" +
                 "IF YOU DIDN NOT SIGN UP FOR THE APP AND YOUR EMAIL IS USED THAN PLEASE CLICK ON THIS LINK HTTPS://SOMEUREL/" + userKey + "\n"
                 + "If you have any other questions. Please fell free to reply to this email. We will be more than happy to help you!!!!\n\n" +
-                "--------------------\n" +
+                "----------------------\n" +
                 "Regards,\n" +
                 "WHAT EVER THE APP NAME IS -- FAMILY";
 
