@@ -132,6 +132,9 @@ public class EditGroupPopup extends PopupActivity {
             groupEntry.photo = scaled;
             GroupDatabase.put(this, groupEntry);
 
+            GroupsSyncAdapter.syncGroupSetImage(this, groupId);
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -24,6 +24,7 @@ import com.codeu.teamjacob.groups.database.UserDatabase;
 import com.codeu.teamjacob.groups.database.UserEntry;
 import com.codeu.teamjacob.groups.sync.request.GroupsRequest;
 import com.codeu.teamjacob.groups.sync.request.HttpRequest;
+import com.codeu.teamjacob.groups.ui.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +61,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int ACTION_ITEM_ADD = 5;
     public static final int ACTION_GROUP_LEAVE = 6;
     public static final int ACTION_GROUP_RENAME = 7;
+    public static final int ACTION_GROUP_SET_IMAGE = 8;
 
 
     //Default constructor
@@ -306,6 +308,21 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
                 break;
+
+
+                case ACTION_GROUP_SET_IMAGE: {
+
+                    HttpURLConnection con = groupSetImage(extras.getLong(EXTRA_GROUP_ID));
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode >= 200 && responseCode <= 300) {
+
+                        //GroupEntry group = GroupDatabase.getById(getContext(), extras.getLong(EXTRA_GROUP_ID));
+                        //GroupDatabase.delete(getContext(), group);
+
+                    }
+                }
+                break;
             }
         } catch (IOException e){
             Log.e(LOG_TAG, e.toString());
@@ -386,6 +403,32 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         return connection;
     }
 
+    private HttpURLConnection groupSetImage(long groupId) {
+
+        GroupEntry groupEntry = GroupDatabase.getById(getContext(), groupId);
+
+        //Build the url for logging in as the user
+        Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
+                .appendPath("group")
+                .appendPath("edit")
+                .appendQueryParameter("group_key", groupEntry.groupKey)
+                .appendQueryParameter("photo", Utility.bitMapToString(groupEntry.photo))
+                .build();
+        Log.d(LOG_TAG, url.toString());
+
+        //Attempt to login as the user
+        HttpURLConnection connection = null;
+        try {
+            //Make the request
+            connection = HttpRequest.get(url);
+            connection.getResponseCode();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        //Return the connection to the url
+        return connection;
+    }
+
     private HttpURLConnection groupUserAdd(long groupId, String userNames) {
 
         //Build the url for logging in as the user
@@ -413,15 +456,36 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private HttpURLConnection userGetGroups(String userKey){
 
+        JSONObject versions = new JSONObject();
+        UserEntry userEntry = UserDatabase.getByKey(getContext(), userKey);
+
+        try {
+
+            GroupEntry[] groupEntries = userEntry.getGroups(getContext());
+            for (int i = 0; i < groupEntries.length; i++) {
+                versions.put(groupEntries[i].groupKey, groupEntries[i].version);
+                versions.put(groupEntries[i].groupKey + "_photo", groupEntries[i].photoVersion);
+
+                ListEntry[] listEntries = groupEntries[i].getLists(getContext(), true);
+                for (int j = 0; j < listEntries.length; j++) {
+                    versions.put(listEntries[j].listKey, listEntries[j].version);
+                }
+
+            }
+        } catch (Exception e){
+            Log.e(LOG_TAG,e.toString());
+        }
+
         //Build the url for logging in as the user
         Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
                 .appendPath("user")
                 .appendPath("get")
                 .appendPath("groups")
                 .appendQueryParameter("user_key", userKey)
-                .appendQueryParameter("versions","[]")
+                .appendQueryParameter("versions",versions.toString())
                 .build();
         Log.d(LOG_TAG, url.toString());
+        Log.d(LOG_TAG, versions.toString());
 
         //Attempt to login as the user
         HttpURLConnection connection = null;
@@ -677,6 +741,23 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_RENAME);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
         bundle.putString(EXTRA_GROUP_NAME, groupName);
+
+        //Request to sync the lists
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+
+    }
+
+    public static void syncGroupSetImage(Context context, long groupId){
+
+        //Get the user account key
+        Account account = GroupsSyncAccount.getSyncAccount(context);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+
+        bundle.putInt(EXTRA_ACTION, ACTION_GROUP_SET_IMAGE);
+        bundle.putLong(EXTRA_GROUP_ID, groupId);
 
         //Request to sync the lists
         ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
