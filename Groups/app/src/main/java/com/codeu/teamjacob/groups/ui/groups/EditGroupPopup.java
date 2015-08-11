@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.codeu.teamjacob.groups.R;
 import com.codeu.teamjacob.groups.database.GroupDatabase;
 import com.codeu.teamjacob.groups.database.GroupEntry;
+import com.codeu.teamjacob.groups.sync.GroupsSyncAccount;
+import com.codeu.teamjacob.groups.sync.GroupsSyncAdapter;
 import com.codeu.teamjacob.groups.ui.Utility;
 import com.codeu.teamjacob.groups.ui.popups.PopupActivity;
 
@@ -40,7 +42,7 @@ public class EditGroupPopup extends PopupActivity {
             groupId = Utility.getGroupId(this);
         }
 
-        GroupEntry groupEntry = GroupDatabase.getById(this, groupId);
+        final GroupEntry groupEntry = GroupDatabase.getById(this, groupId);
 
         //Get the views
         TextView groupName = (TextView) findViewById(R.id.popup_group_name);
@@ -51,12 +53,30 @@ public class EditGroupPopup extends PopupActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(thisActivity, AddGroupUserPopup.class);
-                intent.putExtra(AddGroupUserPopup.EXTA_GROUP_ID,groupId);
+                intent.putExtra(AddGroupUserPopup.EXTA_GROUP_ID, groupId);
                 startActivity(intent);
                 finish();
 
             }
         });
+
+        LinearLayout leaveGroup = (LinearLayout) findViewById(R.id.leave_group);
+        leaveGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                GroupsSyncAdapter.syncGroupLeave(thisActivity,
+                        GroupsSyncAccount.getUserKey(thisActivity), groupId);
+
+                groupEntry.removed = true;
+                GroupDatabase.put(thisActivity, groupEntry);
+
+                finish();
+
+            }
+        });
+
+
 
 
         //btnCreate = (TextView) findViewById(R.id.create_button);

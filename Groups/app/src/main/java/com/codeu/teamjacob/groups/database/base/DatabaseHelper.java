@@ -12,7 +12,7 @@ import com.codeu.teamjacob.groups.database.UserDatabase;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 38;
+    private static final int DATABASE_VERSION = 39;
     static final String DATABASE_NAME = "groups.db";
 
     /**
@@ -50,7 +50,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 GroupDatabase.COLUMN_GROUP_NAME + " TEXT NOT NULL," +
                 GroupDatabase.COLUMN_GROUP_USERS + " TEXT, " +
                 GroupDatabase.COLUMN_GROUP_PENDING_USERS + " TEXT, " +
-                GroupDatabase.COLUMN_GROUP_VERSION + " INTEGER " +
+                GroupDatabase.COLUMN_GROUP_VERSION + " INTEGER, " +
+                GroupDatabase.COLUMN_GROUP_REMOVED + " INTEGER " +
                 " )";
         sqLiteDatabase.execSQL(SQL_CREATE_GROUP_TABLE);
 

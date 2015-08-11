@@ -27,6 +27,8 @@ public class GroupEntry extends Entry {
 
     public long version;
 
+    public boolean removed;
+
     //Default constructor
     public GroupEntry(){ }
 
@@ -54,6 +56,8 @@ public class GroupEntry extends Entry {
             }
 
             this.version = version;
+            this.removed = false;
+
 
         } catch (JSONException e){
             Log.e(LOG_TAG, e.toString());
@@ -72,6 +76,7 @@ public class GroupEntry extends Entry {
             users = new JSONArray(values.getString(GroupDatabase.COL_GROUP_USERS));
             pendingUsers = new JSONArray(values.getString(GroupDatabase.COL_GROUP_PENDING_USERS));
             version = values.getLong(GroupDatabase.COL_GROUP_VERSION);
+            removed = values.getInt(GroupDatabase.COL_GROUP_REMOVED) == GroupDatabase.GROUP_REMOVED_TRUE;
         }
         catch (JSONException e){
             Log.e(LOG_TAG,e.toString());
@@ -92,6 +97,8 @@ public class GroupEntry extends Entry {
         groupValues.put(GroupDatabase.COLUMN_GROUP_USERS, users.toString());
         groupValues.put(GroupDatabase.COLUMN_GROUP_PENDING_USERS, pendingUsers.toString());
         groupValues.put(GroupDatabase.COLUMN_GROUP_VERSION, version);
+        groupValues.put(GroupDatabase.COLUMN_GROUP_REMOVED, removed ?
+                GroupDatabase.GROUP_REMOVED_TRUE : GroupDatabase.GROUP_REMOVED_FALSE);
         return groupValues;
 
     }

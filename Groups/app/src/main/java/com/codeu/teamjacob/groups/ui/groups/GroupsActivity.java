@@ -41,12 +41,16 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
 
     public static final int REQUEST_NEW_GROUP = 0;
 
+<<<<<<< Updated upstream
     private static final int REQUEST_CODE = 1;
 
     private Bitmap bitmap;
 
     private ImageView imageView;
 
+=======
+    String userKey;
+>>>>>>> Stashed changes
     DrawerLayout mDrawerLayout;
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -60,7 +64,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
         final GroupsActivity thisActivity = this;
 
         //Get the user key
-        String userKey = GroupsSyncAccount.getUserKey(this);
+        userKey = GroupsSyncAccount.getUserKey(this);
 
         //Check if the user is not logged in
         if (userKey.equals("")) {
@@ -72,9 +76,10 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
             return;
         }
 
+        setContentView(R.layout.activity_groups);
+
         getSupportActionBar().setElevation(0f);
 
-        setContentView(R.layout.activity_groups);
 
         imageView = (ImageView) findViewById(R.id.profile_img);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -110,12 +115,15 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
+<<<<<<< Updated upstream
                     Intent intent = new Intent();
                     intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     startActivityForResult(intent, REQUEST_CODE);
                 } else if (position == 1) {
+=======
+>>>>>>> Stashed changes
                     GroupsSyncAccount.removeAccount(thisActivity);
                     Intent intent = new Intent(thisActivity, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -144,7 +152,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if (!userKey.equals("")) {
+            mDrawerToggle.syncState();
+        }
     }
 
     @Override
