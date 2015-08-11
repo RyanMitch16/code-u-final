@@ -41,16 +41,16 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
 
     public static final int REQUEST_NEW_GROUP = 0;
 
-<<<<<<< Updated upstream
+
     private static final int REQUEST_CODE = 1;
 
     private Bitmap bitmap;
 
     private ImageView imageView;
 
-=======
+
     String userKey;
->>>>>>> Stashed changes
+
     DrawerLayout mDrawerLayout;
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -115,15 +115,13 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-<<<<<<< Updated upstream
                     Intent intent = new Intent();
                     intent.setType("image/*");
                     intent.setAction(Intent.ACTION_GET_CONTENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     startActivityForResult(intent, REQUEST_CODE);
                 } else if (position == 1) {
-=======
->>>>>>> Stashed changes
+
                     GroupsSyncAccount.removeAccount(thisActivity);
                     Intent intent = new Intent(thisActivity, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
