@@ -66,4 +66,9 @@ public class GroupsSyncAccount {
 
         //GroupsSyncAdapter.configurePeriodicSync(context,20,1);
     }
+
+    public static void removeAccount(Context context){
+        AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
+        accountManager.removeAccount(getSyncAccount(context),null,null);
+    }
 }

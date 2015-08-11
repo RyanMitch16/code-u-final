@@ -376,7 +376,7 @@ class Group(ndb.Model):
 					"list_key" : list_key_str,
 					"list_name" : item_list.name,
 					"list_version" : item_list.version,
-					"list_contents" : str(json.dumps(item_list.content).replace("\\\"",""))[1:-1]
+					"list_contents" : JSON.unquote(item_list.content)
 				})
 			else:
 				response.append( {

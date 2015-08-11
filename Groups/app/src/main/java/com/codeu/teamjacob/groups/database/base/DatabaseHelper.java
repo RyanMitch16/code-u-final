@@ -12,7 +12,7 @@ import com.codeu.teamjacob.groups.database.UserDatabase;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 37;
+    private static final int DATABASE_VERSION = 38;
     static final String DATABASE_NAME = "groups.db";
 
     /**
