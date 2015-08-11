@@ -27,7 +27,6 @@ import android.widget.Toast;
 import com.codeu.teamjacob.groups.R;
 import com.codeu.teamjacob.groups.database.UserDatabase;
 import com.codeu.teamjacob.groups.database.UserEntry;
-import com.codeu.teamjacob.groups.database.base.DatabaseContract;
 import com.codeu.teamjacob.groups.sync.request.GroupsRequest;
 import com.codeu.teamjacob.groups.sync.request.HttpRequest;
 import com.codeu.teamjacob.groups.ui.EmailAsyncTask;

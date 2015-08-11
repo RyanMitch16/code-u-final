@@ -73,7 +73,7 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(thisFragment.getActivity(), LoginActivity.class);
+                Intent intent = new Intent(thisFragment.getActivity(), SignUpActivity.class);
                 startActivity(intent);
 
             }

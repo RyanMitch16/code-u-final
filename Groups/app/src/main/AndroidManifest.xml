@@ -35,6 +35,15 @@
         <activity android:name=".ui.login.LoginActivity">
         </activity>
 
+        <activity
+            android:name=".ui.login.SignUpActivity"
+            android:parentActivityName=".ui.login.LoginActivity"
+            android:label="@string/sign_up_page">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.login.LoginActivity" />
+        </activity>
+
         <activity android:name=".ui.lists.ListsActivity"
             android:parentActivityName=".ui.groups.GroupsActivity">
             <meta-data

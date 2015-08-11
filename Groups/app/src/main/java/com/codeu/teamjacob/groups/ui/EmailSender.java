@@ -35,20 +35,20 @@ public class EmailSender extends javax.mail.Authenticator {
             e.printStackTrace();
         }
         String pass = "GoGraspItCodeU2015";
-        String subject = "Welcome to APP_NAME family :)";
+        String subject = "Welcome to Groups family :)";
         String body = "Hi " + username + "!\n\n"
-                + "Welcome to Go Grasp It and thank you for signing up! You have joined over 500,000 individuals\n" +
-                "just like you who manage their life using Go Grapsp It and make it a way more easier\n" +
+                + "Welcome to Groups and thank you for signing up! You have joined over 500,000 individuals\n" +
+                "just like you who manage their life using Groups and make it a way more easier\n" +
                 "If you have any other questions and if you wish to share you feed back, please fell free to do so.\n" +
                 "We will be more than happy to assist you!!!!\n\n" +
                 "----------------------------------------------------------------------------------\n" +
-                "If you did not sign up for APP_NAME and your email is used than please click on the link below:\n" +
+                "If you did not sign up for Groups and your email is used than please click on the link below:\n" +
                 "Sorry for the inconvenience."+
                 "\nhttp://code-u-final.appspot.com/user/delete?user_key=" + userKey  +
                 "\nElse ingnore this link and enjoy your application.\n"+
                 "----------------------------------------------------------------------------------\n\n" +
                 "Regards,\n" +
-                "APP_NAME";
+                "Groups Team";
 
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", host);
