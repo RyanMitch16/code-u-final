@@ -18,8 +18,10 @@ class User(ndb.Model):
 	# Helpful for finding what contacts you can add to the app
 	phone = ndb.StringProperty(required=False, indexed=True)
 
-	# The list of items the user has access to
-	grocery_lists = ndb.JsonProperty(required=True, indexed=False)
+	# The list of groups the user has access to
+	groups = ndb.JsonProperty(required=True, indexed=False)
+
+	version = ndb.IntegerProperty(required=True, indexed=False)
 
 	@staticmethod
 	def create(username, password, email="", phone=""):
@@ -40,11 +42,23 @@ class User(ndb.Model):
 			raise Exception("User name taken")
 
 		#Create an empty json array to represent the avaliable grocery lists
-		grocery_lists = { "grocery_lists" : [] }
+		groups = []
 
 		#Put the new user in the database
-		user = User(username=username, password=password, email=email, phone=phone, grocery_lists=JSON.encode(grocery_lists))
+		user = User(username=username, password=password, email=email, phone=phone, groups=JSON.encode(groups), version=0)
+
 		return (user.put()).urlsafe()
+
+	@staticmethod
+	def delete(user_key):
+
+		user = User.find_by_key(user_key)
+		if (user == None):
+			raise Exception("Invalid key")
+
+		user.key.delete()
+
+		return "Deleted"
 
 	@staticmethod
 	def login(username, password):
@@ -64,45 +78,44 @@ class User(ndb.Model):
 		return (existing_user[0].key).urlsafe()
 
 	@staticmethod
-	def get_grocery_lists(user_key, versions):
-		"""Get the grocery lists that a user has access
-
+	def get_groups(user_key, versions):
+		"""Get the groups the user is included in
+		
 		Keyword arguments:
 			user_key - the key of the user
-			versions - the json contaning the client versions of each list
 
 		Returns:
-			The grocery lists in a json
+			The groups the user has access to in a json array
 		"""
 
 		user = User.find_by_key(user_key)
 		if (user == None):
 			raise Exception("Invalid key")
 
-		response = { "grocery_lists" : [] }
+		response = {"user_version" : user.version,
+					"groups" : []}
 
-		user_grocery_lists = JSON.decode(user.grocery_lists)
-		for list_key_str in user_grocery_lists["grocery_lists"]:
-			grocery_list = GroceryList.find_by_key(list_key_str)
-			
-			if ((list_key_str in versions) and (versions[list_key_str] == grocery_list.version)):
-				response["grocery_lists"].append( {
-					"list_key" : list_key_str,
-					"list_name" : grocery_list.name,
-					"list_version" : grocery_list.version,
-					"list_contents" : ""
-				})
-			else:
-				response["grocery_lists"].append( {
-					"list_key" : list_key_str,
-					"list_name" : grocery_list.name,
-					"list_version" : grocery_list.version,
-					"list_contents" : str(json.dumps(grocery_list.content).replace("\\\"",""))[1:-1]
-				})
+		if (user_key not in versions) or (versions[user_key] < user.version):
 
-		response = JSON.encode(response)
-		return str(json.dumps(response)).replace("\\\"","\"")[1:-1]
+			user_groups = JSON.decode(user.groups)
 
+			for group_key in user_groups:
+
+				group = Group.find_by_key(group_key)
+
+				if (group_key not in versions) or (versions[group_key] < group.version):
+
+					response["groups"].append(
+						{
+							"group_key" : group_key,
+							"group_name" : group.name,
+							"group_usernames" : JSON.decode(group.usernames),
+							"group_pending_usernames" : JSON.decode(group.pending_usernames),
+							"group_version" : group.version,
+							"group_lists" : JSON.decode(group.get_item_lists(versions))
+						})
+
+		return str(json.dumps(response)).replace("\\\"","\"")
 
 	@staticmethod
 	def check_username(username):
@@ -160,32 +173,263 @@ class User(ndb.Model):
 			return None
 		return existing_user[0]   	
 
-	def check_list_access(self, list_key):
-		"""Checks if the user has access to the list
-
-		Keyword arguments;
-			list_key - the key in string form
-
-		Returns:
-			True - if the user has access
-			False - if otherwise
-		"""
-		allowed = False
-		user_grocery_lists = JSON.decode(self.grocery_lists)
-		for key in user_grocery_lists["grocery_lists"]:
-			if (key == list_key):
-				return True
-		return False
-
 	def update_email(self, new_email):
 		self.email = new_email;
+		self.put()
+
+	def increment_version(self):
+		self.version += 1
+		self.put()
+
+class Group(ndb.Model):
+
+	# Set the name of the list
+	name = ndb.StringProperty(required=True, indexed=False)
+
+	#The content of the grocery list
+	usernames = ndb.JsonProperty(required=True, indexed=False)
+
+	pending_usernames = ndb.JsonProperty(required=True, indexed=False)
+
+	version = ndb.IntegerProperty(required=True, indexed=False)
+
+	@staticmethod
+	def create(user_key, name=""):
+
+		#Find the user to add the key to
+		user = User.find_by_key(user_key)
+		if (user == None):
+			raise Exception("Invalid key")
+
+		if (name == ""):
+			name = "Untilted"
+
+		# Set the list to empty
+		usernames = [user.username]
+		pending_usernames = []
+
+		# Add the new item list to the database
+		group = Group(name=name, usernames=JSON.encode(usernames),
+			pending_usernames=JSON.encode(pending_usernames), version=0)
+
+		group_key = (group.put()).urlsafe()
+		user_groups = JSON.decode(user.groups)
+		user_groups.append(group_key)
+		user.groups = JSON.encode(user_groups)
+		user.increment_version()
 		user.put()
 
+		return group_key
 
-class GroceryList(ndb.Model):
+	@staticmethod
+	def add_users(group_key, usernames):
+
+		#Find the user to add the key to
+		group = Group.find_by_key(group_key)
+		if (group == None):
+			raise Exception("Invalid group key")
+
+		#Get the pending usernames and current usernames
+		group_usernames = JSON.decode(group.usernames)
+		group_pending_usernames = JSON.decode(group.pending_usernames)
+
+		usernames = JSON.unquote(usernames)
+
+		for username in usernames:
+
+			#Find the user to add the key to
+			user = User.find_by_username(username)
+			if (user != None):
+
+				if (user.username not in group_pending_usernames) and (user.username not in group_usernames):
+					
+					#Add the username to the list of pending users
+					group_pending_usernames.append(user.username)
+
+					#Add the group to the list of user groups
+					user_groups = JSON.decode(user.groups)
+					user_groups.append(group_key)
+					user.groups = JSON.encode(user_groups)
+					user.increment_version()
+					user.put()
+
+
+		group.pending_usernames = JSON.encode(group_pending_usernames)
+		group.increment_version()
+		group.put()
+
+		#Return the currently pending users
+		return str(json.dumps(group_pending_usernames)).replace("\\\"","\"")
+
+	@staticmethod
+	def accept(user_key, group_key):
+
+		#Find the user to add the key to
+		user = User.find_by_key(user_key)
+		if (user == None):
+			raise Exception("Invalid key")
+
+		#Find the user to add the key to
+		group = Group.find_by_key(group_key)
+		if (group == None):
+			raise Exception("Invalid group key")
+
+		#Remove the user from the pending users
+		group_pending_usernames = JSON.unquote(group.pending_usernames)
+		group_pending_usernames.remove(user.username)
+		group.pending_usernames = JSON.encode(group_pending_usernames)
+
+		#Put the user in the confirmed users
+		group_usernames = JSON.unquote(group.usernames)
+		group_usernames.append(user.username)
+		group.usernames = JSON.encode(group_usernames)
+		group.increment_version()
+		group.put()
+
+		user.increment_version()
+
+		return "Group request accepted"
+
+		#return str(user.username in group.pending_usernames ) + " , " + str(group_pending_usernames)
+
+	@staticmethod
+	def deny(user_key, group_key):
+
+		#Find the user to add the key to
+		user = User.find_by_key(user_key)
+		if (user == None):
+			raise Exception("Invalid key")
+
+		#Find the user to add the key to
+		group = Group.find_by_key(group_key)
+		if (group == None):
+			raise Exception("Invalid group key")
+
+		#Remove the user from the pending users
+		group_pending_usernames = JSON.unquote(group.pending_usernames)
+		group_pending_usernames.remove(user.username)
+		group.pending_usernames = JSON.encode(group_pending_usernames)
+		group.increment_version()
+		group.put()
+
+		#Remove the list from the users lists
+		user_groups = JSON.unquote(user.groups)
+		user_groups.remove(group_key)
+		user.groups = JSON.encode(user_groups)
+		user.increment_version()
+		user.put()
+
+		return "Group request denied"
+
+	@staticmethod
+	def leave(user_key, group_key):
+
+		#Find the user to add the key to
+		user = User.find_by_key(user_key)
+		if (user == None):
+			raise Exception("Invalid key")
+
+		#Find the user to add the key to
+		group = Group.find_by_key(group_key)
+		if (group == None):
+			raise Exception("Invalid group key")
+
+		#Remove the user from the pending users
+		group_usernames = JSON.unquote(group.usernames)
+		group_usernames.remove(user.username)
+		group.usernames = JSON.encode(group_usernames)
+		group.increment_version()
+		group.put()	
+
+		#Remove the list from the users lists
+		user_groups = JSON.unquote(user.groups)
+		user_groups.remove(group_key)
+		user.groups = JSON.encode(user_groups)
+		user.increment_version()
+		user.put()
+
+		return "Group left"
+
+
+	
+	def get_item_lists(self, versions):
+		"""Get the grocery lists that a user has access
+
+		Keyword arguments:
+			user_key - the key of the user
+			versions - the json contaning the client versions of each list
+
+		Returns:
+			The grocery lists in a json
+		"""
+
+		response = []
+
+		item_lists = ItemList.query(ItemList.group_key==(self.put()).urlsafe())
+
+		for item_list in item_lists:
+
+			list_key_str = (item_list.put()).urlsafe()
+			
+			if ((list_key_str not in versions) or (versions[list_key_str] < item_list.version)):
+				response.append( {
+					"list_key" : list_key_str,
+					"list_name" : item_list.name,
+					"list_version" : item_list.version,
+					"list_contents" : str(json.dumps(item_list.content).replace("\\\"",""))[1:-1]
+				})
+			else:
+				response.append( {
+					"list_key" : list_key_str,
+					"list_name" : item_list.name,
+					"list_version" : item_list.version,
+					"list_contents" : ""
+				})
+
+		response = JSON.encode(response)
+		return response
+
+	@staticmethod
+	def find_by_key(key):
+		"""Finds the group by looking up the key
+
+		Keyword arguments:
+		    key - the group key
+
+		Returns:
+		    The group if one exists or None
+		"""
+		try:
+			group = ndb.Key(urlsafe=key).get()
+			if (group is not None):
+				return group
+		except:
+			return None
+		return None
+
+	def increment_version(self):
+		self.version += 1
+		self.put()
+
+		usernames = JSON.unquote(self.usernames)
+		for username in usernames:
+			user = User.find_by_username(username)
+			user.increment_version()
+			user.put()
+
+		usernames = JSON.unquote(self.pending_usernames)
+		for username in usernames:
+			user = User.find_by_username(username)
+			user.increment_version()
+			user.put()
+
+class ItemList(ndb.Model):
 
     # Set the name of the list
     name = ndb.StringProperty(required=True, indexed=False)
+
+    # The group the list belongs to
+    group_key = ndb.StringProperty(required=True, indexed=True)
 
     #The content of the grocery list
     content = ndb.JsonProperty(required=True, indexed=False)
@@ -200,7 +444,7 @@ class GroceryList(ndb.Model):
     UPDATE_CONTENT_ID = "_id"
 
     @staticmethod
-    def create(user_key, name="Untilted"):
+    def create(group_key, name=""):
         """Creates a new list with the provided name
 
         Keyword arguments:
@@ -212,59 +456,43 @@ class GroceryList(ndb.Model):
         """
 
         #Find the user to add the key to
-        user = User.find_by_key(user_key)
-        if (user == None):
+        group = Group.find_by_key(group_key)
+        if (group == None):
             raise Exception("Invalid key")
 
         if (name == ""):
         	name = "Untilted"
 
         # Set the list to empty
-        grocery_list_contents = { "items" : [] }
+        item_list_contents = []
 
         # Add the new item list to the database
-        grocery_list = GroceryList(name=name, content=JSON.encode(grocery_list_contents),version=0)
-        grocery_list_key = (grocery_list.put()).urlsafe()
-        
-        # Add the item list key to the user's avaliable lists
-        user_grocery_lists = JSON.decode(user.grocery_lists)
-        user_grocery_lists["grocery_lists"].append(grocery_list_key)
-        user.grocery_lists = JSON.encode(user_grocery_lists)
-        user.put()
+        item_list = ItemList(name=name, group_key=group_key, content=JSON.encode(item_list_contents),version=0)
+        item_list_key = (item_list.put()).urlsafe()
 
-        return grocery_list_key
+        group.increment_version()
+
+        return item_list_key
 
     @staticmethod
-    def get(user_key, list_key):
-    	"""Gets the grocery list if the user has access to it
+    def delete(list_key):
 
-    	Keyword arguments:
-            user_key - the string key of the user
-            list_key - the string key of the grocery list
-
-        Returns:
-        	The contents of the grocery list
-    	"""
-
-    	#Find the user
-        user = User.find_by_key(user_key)
-        if (user == None):
-            raise Exception("Invalid user key")
-
-        #Find the grocery list
-        grocery_list = GroceryList.find_by_key(list_key)
-        if (grocery_list == None):
+        #Find the user to add the key to
+        item_list = ItemList.find_by_key(list_key)
+        if (item_list == None):
             raise Exception("Invalid list key")
 
-        # Checks if the user is allowed to edit the list
-        if (user.check_list_access(list_key) == False):
-            raise Exception("User does not have access to this list")
+        group = Group.find_by_key(item_list.group_key)
 
-        #Get the contents of the current grocery list
-        return (str(json.dumps(grocery_list.content)).replace("\\\"","\""))[1:-1]
+        #Figuee out a way to represent deletions
+       	group.increment_version()
+
+        item_list.key.delete()
+
+
 
     @staticmethod
-    def update_content(user_key, list_key, changed_content):
+    def update_content(list_key, changed_content):
         """Adds and deletes items from the list (see readme for more info)
 
         Keyword arguments:
@@ -273,47 +501,38 @@ class GroceryList(ndb.Model):
             changed_content - the items to add and delete from the list
         """
 
-        #Find the user
-        user = User.find_by_key(user_key)
-        if (user == None):
-            raise Exception("Invalid user key")
-
         #Find the grocery list
-        grocery_list = GroceryList.find_by_key(list_key)
-        if (grocery_list == None):
+        item_list = ItemList.find_by_key(list_key)
+        if (item_list == None):
             raise Exception("Invalid list key")
 
-        # Checks if the user is allowed to edit the list
-        if (user.check_list_access(list_key) == False):
-            raise Exception("User does not have access to this list")
-
         #Get the contents of the current grocery list
-        content = JSON.decode(grocery_list.content)
+        content = JSON.decode(item_list.content)
         
-        for item in changed_content["items"]:
+        for item in changed_content:
             # Remove the hidden operation code from the item
-            opcode = item[GroceryList.UPDATE_CONTENT_OPCODE]
-            item.pop(GroceryList.UPDATE_CONTENT_OPCODE)
+            opcode = item[ItemList.UPDATE_CONTENT_OPCODE]
+            item.pop(ItemList.UPDATE_CONTENT_OPCODE)
             
             # Add the item to the list if the op code was to add it
-            if (opcode == GroceryList.UPDATE_CONTENT_OPCODE_ADD):
-                content["items"].append(item)
+            if (opcode == ItemList.UPDATE_CONTENT_OPCODE_ADD):
+                content.append(item)
             
             # Delete the item from the list if the op code was to delete it
-            elif (opcode == GroceryList.UPDATE_CONTENT_OPCODE_DELETE):
-                for item2 in content["items"]:
-                    if ((GroceryList.UPDATE_CONTENT_ID in item2) and (item2[GroceryList.UPDATE_CONTENT_ID] == item[GroceryList.UPDATE_CONTENT_ID])):
-                        content["items"].remove(item2)
+            elif (opcode == ItemList.UPDATE_CONTENT_OPCODE_DELETE):
+                for item2 in content:
+                    if ((ItemList.UPDATE_CONTENT_ID in item2) and (item2[ItemList.UPDATE_CONTENT_ID] == item[ItemList.UPDATE_CONTENT_ID])):
+                        content.remove(item2)
                         break
 
         #Increment the version number
-        grocery_list.version += 1
+        item_list.increment_version()
 
         # Put the new list content in the database
-        grocery_list.content = JSON.encode(content)
-        grocery_list.put()
+        item_list.content = JSON.encode(content)
+        item_list.put()
 
-        return (str(json.dumps(grocery_list.content)).replace("\\\"","\""))[1:-1]
+        return (str(json.dumps(item_list.content)).replace("\\\"","\""))[1:-1]
 
     @staticmethod
     def find_by_key(key):
@@ -326,12 +545,19 @@ class GroceryList(ndb.Model):
             The user if one exists or None
         """
         try:
-            grocery_list = ndb.Key(urlsafe=key).get()
-            if (grocery_list is not None):
-                return grocery_list
+            item_list = ndb.Key(urlsafe=key).get()
+            if (item_list is not None):
+                return item_list
         except:
             return None
         return None
+
+    def increment_version(self):
+		self.version += 1
+		self.put()
+
+		group = Group.find_by_key(self.group_key)
+		group.increment_version()
 
 
 
