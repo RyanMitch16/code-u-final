@@ -1,7 +1,11 @@
-package com.example.grocerycodeu.grocerycloud;
+package com.codeu.teamjacob.groups.ui;
+
+/**
+ * Created by saryal on 8/10/15.
+ */
 
 import java.util.Properties;
-
+import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
