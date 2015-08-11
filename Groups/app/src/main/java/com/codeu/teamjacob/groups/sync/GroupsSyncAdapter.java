@@ -394,7 +394,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection connection = null;
         try {
             //Make the request
-            connection = HttpRequest.get(url);
+            connection = HttpRequest.post(url);
             connection.getResponseCode();
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());
@@ -420,7 +420,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection connection = null;
         try {
             //Make the request
-            connection = HttpRequest.get(url);
+            connection = HttpRequest.post(url);
             connection.getResponseCode();
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());

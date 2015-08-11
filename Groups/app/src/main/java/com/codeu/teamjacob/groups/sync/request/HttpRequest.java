@@ -1,6 +1,7 @@
 package com.codeu.teamjacob.groups.sync.request;
 
 import android.net.Uri;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,16 +48,18 @@ public final class HttpRequest {
     public static HttpURLConnection post (Uri url) throws IOException{
 
         //Create the connection to the url
-        HttpURLConnection con = (HttpURLConnection) (new URL(url.getPath())).openConnection();
+        HttpURLConnection con = (HttpURLConnection) (new URL(url.getScheme()+"://"+url.getAuthority()+url.getPath())).openConnection();
 
         // Add the http header to the request
         con.setDoOutput(true); // Triggers POST.
+        con.setRequestMethod("POST");
         con.setRequestProperty("User-Agent", urlCharset);
         con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + urlCharset);
 
         // Write the parameters to the query string and send the post request to the url
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
         wr.writeBytes(url.getQuery());
+        Log.d("XCX", url.getQuery().toString());
         wr.flush();
         wr.close();
 
