@@ -4,27 +4,32 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
 
 public class Utility {
 
-    public static final String PREFERENCE_FILE_NAME ="SETTINGS";
+    public static final String PREFERENCE_FILE_NAME = "SETTINGS";
 
     public static String GROUP_ID = "GROUP_ID";
 
-    public static void setGroupId(Context context, long id){
+    public static void setGroupId(Context context, long id) {
 
-        SharedPreferences mPrefs = context.getSharedPreferences(PREFERENCE_FILE_NAME,context.MODE_PRIVATE);
+        SharedPreferences mPrefs = context.getSharedPreferences(PREFERENCE_FILE_NAME, context.MODE_PRIVATE);
         SharedPreferences.Editor ed = mPrefs.edit();
         ed.putLong(GROUP_ID, id);
         ed.commit();
     }
 
-    public static long getGroupId(Context context){
+    public static long getGroupId(Context context) {
 
-        SharedPreferences mPrefs = context.getSharedPreferences(PREFERENCE_FILE_NAME,context.MODE_PRIVATE);
+        SharedPreferences mPrefs = context.getSharedPreferences(PREFERENCE_FILE_NAME, context.MODE_PRIVATE);
         return mPrefs.getLong(GROUP_ID, -1);
 
     }
@@ -34,7 +39,7 @@ public class Utility {
         return tm.getLine1Number();
     }
 
-    public static  void readContacts(Context context) {
+    public static void readContacts(Context context) {
         ContentResolver cr = context.getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -64,6 +69,28 @@ public class Utility {
                     pCur.close();
                 }
             }
+        }
+    }
+
+    //Bitmap to String:
+    public static String bitMapToString(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] arr = baos.toByteArray();
+        String result = Base64.encodeToString(arr, Base64.DEFAULT);
+        return result;
+    }
+
+
+    //String to Bitmap:
+    public static Bitmap stringToBitMap(String image) {
+        try {
+            byte[] encodeByte = Base64.decode(image, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
         }
     }
 

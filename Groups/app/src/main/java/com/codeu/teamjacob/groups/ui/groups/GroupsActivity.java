@@ -4,12 +4,15 @@ import android.accounts.Account;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 import com.codeu.teamjacob.groups.R;
 import com.codeu.teamjacob.groups.database.GroupEntry;
@@ -28,6 +32,7 @@ import com.codeu.teamjacob.groups.ui.Utility;
 import com.codeu.teamjacob.groups.ui.lists.ListsActivity;
 import com.codeu.teamjacob.groups.ui.login.LoginActivity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,6 +112,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
 
         mListView.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_item, R.id.drawer_item_text_view, new String[]{"Change Icon", "Log out"}));
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -198,9 +204,10 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
                         data.getData());
                 bitmap = BitmapFactory.decodeStream(stream);
                 stream.close();
-                
+
                 imageView.setImageBitmap(bitmap);
-                Log.e("BITMAP",bitmap + "");
+                String result = Utility.bitMapToString(bitmap);
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
