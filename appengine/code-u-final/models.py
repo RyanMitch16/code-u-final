@@ -112,7 +112,9 @@ class User(ndb.Model):
 							"group_usernames" : JSON.decode(group.usernames),
 							"group_pending_usernames" : JSON.decode(group.pending_usernames),
 							"group_version" : group.version,
-							"group_lists" : JSON.decode(group.get_item_lists(versions))
+							"group_lists" : JSON.decode(group.get_item_lists(versions)),
+							"group_photo" : group.photo if ((group_key+"_photo" not in versions) or (versions[group_key+"_photo"] < group.photo_version)) else "",
+							"group_photo_version" : group.photo_version
 						})
 
 		return str(json.dumps(response)).replace("\\\"","\"")
@@ -193,6 +195,10 @@ class Group(ndb.Model):
 
 	version = ndb.IntegerProperty(required=True, indexed=False)
 
+	photo = ndb.StringProperty(required=True, indexed=False)
+
+	photo_version = ndb.IntegerProperty(required=True, indexed=False)
+
 	@staticmethod
 	def create(user_key, name=""):
 
@@ -210,7 +216,7 @@ class Group(ndb.Model):
 
 		# Add the new item list to the database
 		group = Group(name=name, usernames=JSON.encode(usernames),
-			pending_usernames=JSON.encode(pending_usernames), version=0)
+			pending_usernames=JSON.encode(pending_usernames), version=0,photo="",photo_version=0)
 
 		group_key = (group.put()).urlsafe()
 		user_groups = JSON.decode(user.groups)
@@ -350,6 +356,22 @@ class Group(ndb.Model):
 
 		return "Group left"
 
+	@staticmethod
+	def edit(group_key, group_name, group_photo):
+
+		#Find the user to add the key to
+		group = Group.find_by_key(group_key)
+		if (group == None):
+			raise Exception("Invalid group key")
+
+		if (group_name != ""):
+			group.name = group_name
+			group.increment_version()
+
+		if (group_photo != ""):
+			group.photo = group_photo
+			group.photo_version += 1
+			group.increment_version()
 
 	
 	def get_item_lists(self, versions):

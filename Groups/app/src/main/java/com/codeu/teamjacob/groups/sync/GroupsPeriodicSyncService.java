@@ -10,11 +10,11 @@ public class GroupsPeriodicSyncService extends Service {
 
     static final public String BROADCAST_ACTION = "com.codeu.teamjacob.groups.update";
 
-    public static int REQUEST_DELAY = 10*1000;
+    public static int REQUEST_DELAY = 20*1000;
 
     public String userKey;
 
-    Updater updater;
+    static Updater updater;
 
 
     class Updater extends Thread {

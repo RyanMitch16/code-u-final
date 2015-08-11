@@ -109,6 +109,14 @@
                 android:value=".ui.groups.GroupsActivity" />
         </activity>
 
+        <activity android:name=".ui.groups.GroupRenamePopup"
+            android:parentActivityName=".ui.groups.GroupsActivity"
+            android:theme="@style/AppTheme.Popup.Dim">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.groups.GroupsActivity" />
+        </activity>
+
         <activity android:name=".ui.lists.CreateListPopup"
             android:parentActivityName=".ui.lists.ListsActivity"
             android:theme="@style/AppTheme.Popup.Dim">

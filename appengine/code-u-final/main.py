@@ -144,6 +144,26 @@ class CreatGroupHandler(webapp2.RequestHandler):
             self.response.set_status(406)
             self.response.write(str(e))
 
+class EditGroupHandler(webapp2.RequestHandler):
+    def get(self):
+
+        # Check if the list name is provided
+        group_key = self.request.get('group_key')
+        name = self.request.get('name')
+        photo = self.request.get('photo')
+
+        try:
+            # Add the new list to the database
+            new_content = Group.edit(group_key, name, photo)
+
+            # Respond with the list key
+            self.response.set_status(201)
+            self.response.write(new_content)
+        except Exception as e:
+            # Respond with the error
+            self.response.set_status(406)
+            self.response.write(str(e))
+
 class AddUsersGroupHandler(webapp2.RequestHandler):
     def get(self):
 
@@ -194,6 +214,7 @@ app = webapp2.WSGIApplication([
     ('/user/get/groups', UserGetGroupsHandler),
 
     ('/group/create', CreatGroupHandler),
+    ('/group/edit', EditGroupHandler),
     ('/group/user/add', AddUsersGroupHandler),
     ('/group/user/confirm', ConfirmGroupHandler),
 

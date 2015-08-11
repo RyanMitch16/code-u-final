@@ -37,6 +37,8 @@ public class GroupDatabase {
     public static final String COLUMN_GROUP_PENDING_USERS = "pending_user_ids";
     public static final String COLUMN_GROUP_VERSION = "group_version";
     public static final String COLUMN_GROUP_REMOVED = "group_removed";
+    //public static final String COLUMN_GROUP_REMOVED = "group_removed";
+    //public static final String COLUMN_GROUP_REMOVED = "group_removed";
 
     //The variables for the index of the property columns
     public static final int COL_GROUP_KEY;

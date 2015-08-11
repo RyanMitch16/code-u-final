@@ -59,6 +59,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int ACTION_LIST_CREATE = 4;
     public static final int ACTION_ITEM_ADD = 5;
     public static final int ACTION_GROUP_LEAVE = 6;
+    public static final int ACTION_GROUP_RENAME = 7;
 
 
     //Default constructor
@@ -290,6 +291,21 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                 }
 
                 break;
+
+                case ACTION_GROUP_RENAME: {
+
+                    HttpURLConnection con = groupRename(extras.getLong(EXTRA_GROUP_ID),
+                            extras.getString(EXTRA_GROUP_NAME));
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode >= 200 && responseCode <= 300) {
+
+                        //GroupEntry group = GroupDatabase.getById(getContext(), extras.getLong(EXTRA_GROUP_ID));
+                        //GroupDatabase.delete(getContext(), group);
+
+                    }
+                }
+                break;
             }
         } catch (IOException e){
             Log.e(LOG_TAG, e.toString());
@@ -330,6 +346,30 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                 .appendPath("leave")
                 .appendQueryParameter("user_key", userKey)
                 .appendQueryParameter("group_key", GroupDatabase.getById(getContext(), groupId).groupKey)
+                .build();
+        Log.d(LOG_TAG, url.toString());
+
+        //Attempt to login as the user
+        HttpURLConnection connection = null;
+        try {
+            //Make the request
+            connection = HttpRequest.get(url);
+            connection.getResponseCode();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        //Return the connection to the url
+        return connection;
+    }
+
+    private HttpURLConnection groupRename(long groupId, String groupName) {
+
+        //Build the url for logging in as the user
+        Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
+                .appendPath("group")
+                .appendPath("edit")
+                .appendQueryParameter("group_key", GroupDatabase.getById(getContext(), groupId).groupKey)
+                .appendQueryParameter("name", groupName)
                 .build();
         Log.d(LOG_TAG, url.toString());
 
@@ -619,6 +659,24 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_LEAVE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
         bundle.putString(EXTRA_USER_KEY, userKey);
+
+        //Request to sync the lists
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+
+    }
+
+    public static void syncGroupRename(Context context, long groupId, String groupName){
+
+        //Get the user account key
+        Account account = GroupsSyncAccount.getSyncAccount(context);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+
+        bundle.putInt(EXTRA_ACTION, ACTION_GROUP_RENAME);
+        bundle.putLong(EXTRA_GROUP_ID, groupId);
+        bundle.putString(EXTRA_GROUP_NAME, groupName);
 
         //Request to sync the lists
         ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);

@@ -60,6 +60,19 @@ public class EditGroupPopup extends PopupActivity {
             }
         });
 
+        LinearLayout renameGroup = (LinearLayout) findViewById(R.id.rename_group);
+        renameGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(thisActivity, GroupRenamePopup.class);
+                intent.putExtra(GroupRenamePopup.EXTRA_GROUP_ID, groupId);
+                startActivity(intent);
+                finish();
+
+            }
+        });
+
         LinearLayout leaveGroup = (LinearLayout) findViewById(R.id.leave_group);
         leaveGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +88,8 @@ public class EditGroupPopup extends PopupActivity {
 
             }
         });
+
+
 
 
 
