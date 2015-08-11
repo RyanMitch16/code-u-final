@@ -7,20 +7,16 @@ package com.codeu.teamjacob.groups.ui.login;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -42,8 +38,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
     EditText txtPassword;
     EditText txtPasswordRetype;
     EditText txtEmail;
-    CheckBox findMe;
-    Button btnSignUp;
+     Button btnSignUp;
 
     String username;
     String password;
@@ -76,32 +71,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
         txtPassword = (EditText) rootView.findViewById(R.id.password_text_view);
         txtPasswordRetype = (EditText) rootView.findViewById(R.id.password_retype_text_view);
         txtEmail = (EditText) rootView.findViewById(R.id.email_text_view);
-
-        // Allow user to his/her  phone number
-        findMe = (CheckBox) rootView.findViewById(R.id.checkbox_sharing);
-        findMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                              @Override
-                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                  checkedMyNumber = !checkedMyNumber;
-                                                  if (checkedMyNumber) {
-                                                      Log.e("STATUS", "" + checkedMyNumber);
-                                                      readMyNumber();
-                                                  }
-                                              }
-                                          }
-        );
-
-        // Allow user to share contact list
-        findMe = (CheckBox) rootView.findViewById(R.id.checkbox_sharing_contacts);
-        findMe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                              @Override
-                                              public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                  checkedShareContact = !checkedShareContact;
-                                                  Log.e("STATUS", "" + checkedShareContact);
-                                              }
-                                          }
-        );
-
 
         //Find the login button
         btnSignUp = (Button) rootView.findViewById(R.id.sign_up_button);
@@ -181,7 +150,7 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
                         new EmailAsyncTask().execute(receiverEmail,
                                 username,
                                 userKey);
-                        Log.e("Check point", "Get inside the gmail sender");
+                        // Log.e("Check point", "Get inside the gmail sender");
                     } catch (Exception e) {
                         Log.e("SendMail", e.getMessage(), e);
                     }
@@ -273,13 +242,6 @@ public class UserSignUpFragment extends Fragment implements LoaderManager.Loader
             return false;
         }
 
-    }
-
-    public void readMyNumber() {
-        TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        String number = tm.getLine1Number();
-        // I guess a code block must be added to add phoen number to db
-        Log.e("My Number", number + "");
     }
 
     public void readContacts() {

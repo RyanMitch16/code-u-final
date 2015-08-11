@@ -5,7 +5,7 @@ package com.codeu.teamjacob.groups.ui;
  */
 
 import java.util.Properties;
-import java.util.Properties;
+//import javax.
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -45,7 +45,7 @@ public class EmailSender extends javax.mail.Authenticator {
                 "If you did not sign up for Groups and your email is used than please click on the link below:\n" +
                 "Sorry for the inconvenience."+
                 "\nhttp://code-u-final.appspot.com/user/delete?user_key=" + userKey  +
-                "\nElse ingnore this link and enjoy your application.\n"+
+                "\nElse ignore this link and enjoy your application.\n"+
                 "----------------------------------------------------------------------------------\n\n" +
                 "Regards,\n" +
                 "Groups Team";

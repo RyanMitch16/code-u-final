@@ -50,16 +50,6 @@
             android:inputType="textEmailAddress"
             android:hint="Email (Optional)" />
 
-        <CheckBox android:id="@+id/checkbox_sharing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Allow other users to find me by my phone number." />
-
-        <CheckBox android:id="@+id/checkbox_sharing_contacts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Share my contacts with the application." />
-
         <Button
             android:id="@+id/sign_up_button"
             android:layout_width="match_parent"
