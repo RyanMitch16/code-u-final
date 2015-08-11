@@ -46,14 +46,16 @@
         </activity>
 
         <activity android:name=".ui.lists.ListsActivity"
-            android:parentActivityName=".ui.groups.GroupsActivity">
+            android:parentActivityName=".ui.groups.GroupsActivity"
+            android:label="@string/list_page">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.groups.GroupsActivity" />
         </activity>
 
         <activity android:name=".ui.items.ItemsActivity"
-            android:parentActivityName=".ui.lists.ListsActivity">
+            android:parentActivityName=".ui.lists.ListsActivity"
+            android:label="@string/item_page">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.lists.ListsActivity" />

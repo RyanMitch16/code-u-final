@@ -7,5 +7,7 @@
     <string name="drawer_close">Close</string>
     <string name="drawer_open">Open</string>
     <string name="sign_up_page">Sign Up!</string>
+    <string name="list_page">List</string>
+    <string name="item_page">Item</string>
 
 </resources>
