@@ -6,6 +6,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight">
 
     <ImageView
+        android:id="@+id/group_photo"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"

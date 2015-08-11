@@ -205,8 +205,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
                 bitmap = BitmapFactory.decodeStream(stream);
                 stream.close();
 
-                imageView.setImageBitmap(bitmap);
-                String result = Utility.bitMapToString(bitmap);
+                Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 128, 128, true);
+
+                imageView.setImageBitmap(scaled);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

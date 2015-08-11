@@ -3,10 +3,12 @@ package com.codeu.teamjacob.groups.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.codeu.teamjacob.groups.database.base.Entry;
+import com.codeu.teamjacob.groups.ui.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +28,9 @@ public class GroupEntry extends Entry {
     public JSONArray pendingUsers;
 
     public long version;
+
+    public Bitmap photo;
+    public long photoVersion;
 
     public boolean removed;
 
@@ -58,6 +63,9 @@ public class GroupEntry extends Entry {
             this.version = version;
             this.removed = false;
 
+            photo = null;
+            photoVersion = 0;
+
 
         } catch (JSONException e){
             Log.e(LOG_TAG, e.toString());
@@ -77,6 +85,12 @@ public class GroupEntry extends Entry {
             pendingUsers = new JSONArray(values.getString(GroupDatabase.COL_GROUP_PENDING_USERS));
             version = values.getLong(GroupDatabase.COL_GROUP_VERSION);
             removed = values.getInt(GroupDatabase.COL_GROUP_REMOVED) == GroupDatabase.GROUP_REMOVED_TRUE;
+            if (values.getString(GroupDatabase.COL_GROUP_PHOTO).equals("")){
+                photo = null;
+            } else {
+                photo = Utility.stringToBitMap(values.getString(GroupDatabase.COL_GROUP_PHOTO));
+            }
+            photoVersion = values.getLong(GroupDatabase.COL_GROUP_PHOTO_VERSION);
         }
         catch (JSONException e){
             Log.e(LOG_TAG,e.toString());
@@ -99,6 +113,8 @@ public class GroupEntry extends Entry {
         groupValues.put(GroupDatabase.COLUMN_GROUP_VERSION, version);
         groupValues.put(GroupDatabase.COLUMN_GROUP_REMOVED, removed ?
                 GroupDatabase.GROUP_REMOVED_TRUE : GroupDatabase.GROUP_REMOVED_FALSE);
+        groupValues.put(GroupDatabase.COLUMN_GROUP_PHOTO, (photo == null) ? "" : Utility.bitMapToString(photo));
+        groupValues.put(GroupDatabase.COLUMN_GROUP_PHOTO_VERSION, photoVersion);
         return groupValues;
 
     }

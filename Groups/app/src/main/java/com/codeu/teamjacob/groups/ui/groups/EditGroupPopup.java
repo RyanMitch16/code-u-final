@@ -1,6 +1,8 @@
 package com.codeu.teamjacob.groups.ui.groups;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -16,9 +18,17 @@ import com.codeu.teamjacob.groups.sync.GroupsSyncAdapter;
 import com.codeu.teamjacob.groups.ui.Utility;
 import com.codeu.teamjacob.groups.ui.popups.PopupActivity;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class EditGroupPopup extends PopupActivity {
 
     public static final String EXTRA_GROUP_ID = "EXTRA_GROUP_ID";
+
+    private static final int REQUEST_CODE = 1;
+
+    long groupId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +44,6 @@ public class EditGroupPopup extends PopupActivity {
 
         Intent launchIntent = getIntent();
 
-        final long groupId;
         if (launchIntent.hasExtra(EXTRA_GROUP_ID)){
             groupId = launchIntent.getLongExtra(EXTRA_GROUP_ID, -1);
             Utility.setGroupId(this, groupId);
@@ -73,6 +82,19 @@ public class EditGroupPopup extends PopupActivity {
             }
         });
 
+        LinearLayout changeIcon = (LinearLayout) findViewById(R.id.change_icon);
+        changeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
+
         LinearLayout leaveGroup = (LinearLayout) findViewById(R.id.leave_group);
         leaveGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,13 +110,35 @@ public class EditGroupPopup extends PopupActivity {
 
             }
         });
-
-
-
-
-
-
         //btnCreate = (TextView) findViewById(R.id.create_button);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Bitmap bitmap = null;
+        try {
+            InputStream stream = getContentResolver().openInputStream(
+                    data.getData());
+            bitmap = BitmapFactory.decodeStream(stream);
+            stream.close();
+
+            GroupEntry groupEntry = GroupDatabase.getById(this, groupId);
+
+            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 128, 128, true);
+
+            groupEntry.photo = scaled;
+            GroupDatabase.put(this, groupEntry);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        finish();
 
     }
 }

@@ -24,6 +24,7 @@ import com.codeu.teamjacob.groups.sync.GroupsPeriodicSyncService;
 import com.codeu.teamjacob.groups.sync.GroupsSyncAccount;
 import com.codeu.teamjacob.groups.sync.GroupsSyncAdapter;
 import com.codeu.teamjacob.groups.ui.EntryAdapter;
+import com.codeu.teamjacob.groups.ui.Utility;
 
 public class GroupEntryAdapter extends EntryAdapter<GroupEntry> {
 
@@ -36,6 +37,7 @@ public class GroupEntryAdapter extends EntryAdapter<GroupEntry> {
         public final ImageButton imageButtonEdit;
         public final Button acceptButton;
         public final Button denyButton;
+        public final ImageView groupPhoto;
         public int viewType;
 
         public ViewHolder(View view, int viewType) {
@@ -45,6 +47,7 @@ public class GroupEntryAdapter extends EntryAdapter<GroupEntry> {
                 imageButtonEdit.setFocusable(false);}
             acceptButton = (Button) view.findViewById(R.id.accept_btn);
             denyButton = (Button) view.findViewById(R.id.deny_btn);
+            groupPhoto = (ImageView) view.findViewById(R.id.group_photo);
             this.viewType = viewType;
         }
     }
@@ -140,20 +143,28 @@ public class GroupEntryAdapter extends EntryAdapter<GroupEntry> {
 
                     GroupEntry groupEntry = GroupDatabase.getById(getContext(), getItem(position).getId());
 
-                    UserEntry userEntry = UserDatabase.getByKey(getContext(),userKey);
+                    UserEntry userEntry = UserDatabase.getByKey(getContext(), userKey);
 
                     userEntry.removeGroup(groupEntry.getId());
                     UserDatabase.put(getContext(), userEntry);
 
-                    Log.d("Groups",userEntry.groupIds.toString());
+                    Log.d("Groups", userEntry.groupIds.toString());
 
-                    GroupsSyncAdapter.syncGroupConfirm(getContext(),userKey,groupEntry.getId(),false);
+                    GroupsSyncAdapter.syncGroupConfirm(getContext(), userKey, groupEntry.getId(), false);
 
                     Intent newIntent = new Intent(GroupsPeriodicSyncService.BROADCAST_ACTION);
                     getContext().sendBroadcast(newIntent);
 
                 }
             });
+        }
+
+        if (GroupDatabase.getById(getContext(), getItem(position).getId()).photo != null){
+            holder.groupPhoto.setImageBitmap(getItem(position).photo);
+            Log.d("OOO",Utility.bitMapToString(GroupDatabase.getById(getContext(), getItem(position).getId()).photo));
+        }
+        else{
+            Log.d("MMMM", "null");
         }
 
         return view;
