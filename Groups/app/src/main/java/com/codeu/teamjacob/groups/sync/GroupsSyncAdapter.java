@@ -150,7 +150,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
                             JSONObject group = groups.getJSONObject(i);
 
-                            GroupEntry groupEntry = GroupDatabase.getByKey(getContext(),group.getString("group_key"));
+                            GroupEntry groupEntry = GroupDatabase.getByKey(getContext(), group.getString("group_key"));
                             if (groupEntry == null){
                                 groupEntry = new GroupEntry(group.getString("group_key"),
                                         group.getString("group_name"),
@@ -174,8 +174,12 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                                 groupEntry.users = new JSONArray(group.getString("group_usernames"));
                                 groupEntry.pendingUsers = new JSONArray(group.getString("group_pending_usernames"));
                                 groupEntry.version = group.getLong("group_version");
-                                
+
+
                                 String photoStr = group.getString("group_photo");
+                                photoStr = photoStr.replace(" ","+");
+
+                                Log.e("PP",photoStr);
                                 if (photoStr.equals("")){
                                     groupEntry.photo = null;
                                     groupEntry.photoVersion = 0;
@@ -185,6 +189,9 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                                 }
                             }
                             GroupDatabase.put(getContext(), groupEntry);
+
+                            GroupEntry g = GroupDatabase.getById(getContext(), groupEntry.getId());
+                            Log.e(LOG_TAG, g.photo.toString());
 
                             userEntry.addGroup(groupEntry.getId());
                             UserDatabase.put(getContext(), userEntry);
