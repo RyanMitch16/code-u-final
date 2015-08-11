@@ -34,7 +34,7 @@ public class EmailSender extends javax.mail.Authenticator {
         String subject = "Welcome to APP_NAME family :)";
         String body = "Hello " + username + "!\n\n"
                 + "A WELCOME MESSAGE \n" +
-                "IF YOU DIDN NOT SIGN UP FOR THE APP AND YOUR EMAIL IS USED THAN PLEASE CLICK ON THIS LINK HTTPS://SOMEUREL/" + userKey + "\n"
+                "IF YOU DIDN NOT SIGN UP FOR THE APP AND YOUR EMAIL IS USED THAN PLEASE CLICK ON THIS LINK http://code-u-final.appspot.com/user/delete?user_key=" + userKey + "\n"
                 + "If you have any other questions. Please fell free to reply to this email. We will be more than happy to help you!!!!\n\n" +
                 "----------------------\n" +
                 "Regards,\n" +
