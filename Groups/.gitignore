@@ -5,3 +5,6 @@
 .DS_Store
 /build
 /captures
+!libs/additionnal.jar
+!libs/activation.jar
+!libs/mail.jar
