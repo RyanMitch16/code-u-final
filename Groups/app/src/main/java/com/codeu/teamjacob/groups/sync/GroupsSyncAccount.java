@@ -69,6 +69,6 @@ public class GroupsSyncAccount {
 
     public static void removeAccount(Context context){
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
-        accountManager.removeAccount(getSyncAccount(context),null,null,null);
+        accountManager.removeAccount(getSyncAccount(context),null,null);
     }
 }
