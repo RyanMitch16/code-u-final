@@ -8,7 +8,45 @@ android {
         applicationId "com.codeu.teamjacob.groupify"
         minSdkVersion 16
         targetSdkVersion 22
+        versionCode apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "com.codeu.teamjacob.groupify"
+        minSdkVersion 16
+        targetSdkVersion 22
         versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+dependencies {
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    // Ryan's Files
+    compile files('/Users/ryanmitchell/Documents/code-u-final/Groups/libs/activation.jar')
+    compile files('/Users/ryanmitchell/Documents/code-u-final/Groups/libs/additionnal.jar')
+    compile files('/Users/ryanmitchell/Documents/code-u-final/Groups/libs/mail.jar')
+    // Saryal's Files
+    compile files('/Users/saryal/GitHub/code-u-final/Groups/libs/activation.jar')
+    compile files('/Users/saryal/GitHub/code-u-final/Groups/libs/additionnal.jar')
+    compile files('/Users/saryal/GitHub/code-u-final/Groups/libs/mail.jar')
+    // Marcial's Files
+    compile files('C:/codeu/Groups/libs/activation.jar')
+    compile files('C:/codeu/Groups/libs/additionnal.jar')
+    compile files('C:/codeu/Groups/libs/mail.jar')
+}
         versionName "1.0"
     }
     buildTypes {
