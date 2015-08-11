@@ -1,5 +1,6 @@
 package com.codeu.teamjacob.groups.ui.groups;
 
+import android.accounts.Account;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -10,6 +11,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
 import com.codeu.teamjacob.groups.R;
 import com.codeu.teamjacob.groups.database.GroupEntry;
@@ -32,9 +37,15 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
     DrawerLayout mDrawerLayout;
     ActionBarDrawerToggle mDrawerToggle;
 
+    ListView mListView;
+    ListAdapter mListAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        final GroupsActivity thisActivity = this;
 
         //Get the user key
         String userKey = GroupsSyncAccount.getUserKey(this);
@@ -59,14 +70,14 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
             /** Called when a drawer has settled in a completely closed state.*/
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle("Closed");
+                //getSupportActionBar().setTitle("Closed");
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state.*/
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Opened");
+                //getSupportActionBar().setTitle("Opened");
                 //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -74,8 +85,25 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        mListView = (ListView) findViewById(R.id.drawer_list);
+
+        mListView.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_item, R.id.drawer_item_text_view, new String[]{"Log out"}));
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0){
+                    GroupsSyncAccount.removeAccount(thisActivity);
+                    Intent intent = new Intent(thisActivity, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            }
+        });
 
 
     }
@@ -99,7 +127,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        //mDrawerToggle.syncState();
+        mDrawerToggle.syncState();
     }
 
     @Override

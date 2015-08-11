@@ -45,7 +45,6 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
     public ListEntry listEntry;
 
     public boolean editMode;
-    public boolean deleteMode;
 
     Menu menuOptions;
 
@@ -60,7 +59,6 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
                              Bundle savedInstanceState) {
 
         editMode = false;
-        deleteMode = false;
 
         //Get the root view and the list view
         final View rootView = inflater.inflate(R.layout.fragment_item, container, false);
@@ -71,7 +69,7 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
         groupList = (ListView) rootView.findViewById(R.id.item_list_view);
 
         //Create the group adapter
-        itemEntryAdapter = new ItemEntryAdapter(getActivity(), R.layout.fragment_item, editMode);
+        itemEntryAdapter = new ItemEntryAdapter(getActivity(), R.layout.fragment_item);
         groupList.setAdapter(itemEntryAdapter);
 
         //Set the callback of a click to the activity
@@ -145,16 +143,18 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
 
 
     public boolean onBackPressed(){
-        if (deleteMode){
-            deleteMode = false;
-            menuOptions.findItem(R.id.action_trash_items).setVisible(true);
-            menuOptions.findItem(R.id.action_edit_mode).setVisible(true);
+        itemEntryAdapter.toggleEditMode();
+        if (editMode){
+            editMode = false;
             menuOptions.findItem(R.id.action_select_all_items).setVisible(false);
-            itemEntryAdapter.toggleDeleteMode();
+            menuOptions.findItem(R.id.action_trash_items).setVisible(false);
+            menuOptions.findItem(R.id.action_edit_mode).setVisible(true);
             return true;
         }
         return false;
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
@@ -165,35 +165,27 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem checkable = menu.findItem(R.id.action_edit_mode);
-        checkable.setChecked(editMode);
 
         menu.findItem(R.id.action_trash_items).setVisible(false);
-        menuOptions.findItem(R.id.action_select_all_items).setVisible(false);
+        menu.findItem(R.id.action_select_all_items).setVisible(false);
+        menu.findItem(R.id.action_edit_mode).setVisible(true);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit_mode:
-                editMode = !item.isChecked();
-                if (editMode){
-                    item.setIcon(R.mipmap.ic_action_accept_holo_dark);
-                    //item.setTitle()
-                } else{
-                    item.setIcon(R.mipmap.ic_action_edit_holo_dark);
-                }
-                menuOptions.findItem(R.id.action_trash_items).setVisible(editMode);
+
+                menuOptions.findItem(R.id.action_edit_mode).setVisible(false);
+                menuOptions.findItem(R.id.action_trash_items).setVisible(true);
+                menuOptions.findItem(R.id.action_select_all_items).setVisible(true);
+
                 itemEntryAdapter.toggleEditMode();
-                item.setChecked(editMode);
+                editMode = true;
                 return true;
             case R.id.action_trash_items:
-                item.setVisible(false);
-                menuOptions.findItem(R.id.action_edit_mode).setVisible(false);
+                itemEntryAdapter.delete();
 
-                menuOptions.findItem(R.id.action_select_all_items).setVisible(true);
-                deleteMode = true;
-                itemEntryAdapter.toggleDeleteMode();
                 return true;
             case R.id.action_select_all_items:
                 itemEntryAdapter.selectAll(true);

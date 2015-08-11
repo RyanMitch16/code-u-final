@@ -21,8 +21,6 @@ import java.util.ArrayList;
 public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
 
     public boolean editMode;
-    public boolean deleteMode;
-    public boolean selectAll;
 
     public ArrayList<CheckBox> deleteCheckBoxes;
     public ArrayList<CheckBox> completedCheckBoxes;
@@ -42,11 +40,9 @@ public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
     }
 
 
-    public ItemEntryAdapter(Activity context, @LayoutRes int resource, boolean editMode){
+    public ItemEntryAdapter(Activity context, @LayoutRes int resource){
         super(context, resource);
-        this.editMode = editMode;
-        deleteMode = false;
-        selectAll = false;
+        this.editMode = false;
 
         deleteCheckBoxes = new ArrayList<CheckBox>();
         completedCheckBoxes = new ArrayList<CheckBox>();
@@ -67,6 +63,7 @@ public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
         holder.itemNameView.setText(getItem(position).itemName);
         holder.deleteBox.setVisibility(View.INVISIBLE);
         holder.completedBox.setVisibility((editMode) ? View.INVISIBLE : View.VISIBLE);
+
         deleteCheckBoxes.add(holder.deleteBox);
         completedCheckBoxes.add(holder.completedBox);
 
@@ -75,38 +72,36 @@ public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
 
     public void toggleEditMode(){
         editMode = !editMode;
-        if (editMode){
+        if (!editMode){
             for (CheckBox checkBox : completedCheckBoxes) {
+                checkBox.setVisibility(View.VISIBLE);
+            }
+            for (CheckBox checkBox : deleteCheckBoxes) {
                 checkBox.setVisibility(View.INVISIBLE);
             }
         } else {
             for (CheckBox checkBox : completedCheckBoxes) {
-                checkBox.setVisibility(View.VISIBLE);
-            }
-        }
-
-    }
-
-    public void toggleDeleteMode(){
-        deleteMode = !deleteMode;
-
-        editMode = !editMode;
-        if (deleteMode){
-            for (CheckBox checkBox : deleteCheckBoxes) {
-                checkBox.setVisibility(View.VISIBLE);
-            }
-        } else {
-            for (CheckBox checkBox : deleteCheckBoxes) {
                 checkBox.setVisibility(View.INVISIBLE);
             }
+            for (CheckBox checkBox : deleteCheckBoxes) {
+                checkBox.setVisibility(View.VISIBLE);
+            }
         }
+
     }
 
     public void selectAll(boolean select){
-        selectAll = select;
-
         for (CheckBox checkBox : deleteCheckBoxes) {
             checkBox.setChecked(true);
+        }
+    }
+
+    public void delete(){
+        for (int i=0;i<deleteCheckBoxes.size();i++){
+            CheckBox checkBox = deleteCheckBoxes.get(i);
+            if (checkBox.isChecked()){
+                remove(getItem(i));
+            }
         }
     }
 

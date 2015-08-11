@@ -29,4 +29,7 @@ dependencies {
     compile files('/Users/saryal/GitHub/code-u-final/Groups/libs/activation.jar')
     compile files('/Users/saryal/GitHub/code-u-final/Groups/libs/additionnal.jar')
     compile files('/Users/saryal/GitHub/code-u-final/Groups/libs/mail.jar')
+    compile files('/Users/ryanmitchell/Documents/code-u-final/Groups/libs/activation.jar')
+    compile files('/Users/ryanmitchell/Documents/code-u-final/Groups/libs/additionnal.jar')
+    compile files('/Users/ryanmitchell/Documents/code-u-final/Groups/libs/mail.jar')
 }
