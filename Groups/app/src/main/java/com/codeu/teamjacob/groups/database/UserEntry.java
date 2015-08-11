@@ -12,6 +12,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class UserEntry extends Entry {
 
     //Set the log tag
@@ -138,7 +142,20 @@ public class UserEntry extends Entry {
 
             }
 
-            return GroupDatabase.query(context,selection,selectionArgs,null);
+            ArrayList<GroupEntry> groupsToReturn = new ArrayList<GroupEntry>();
+            GroupEntry[] groups = GroupDatabase.query(context,selection,selectionArgs,null);
+            for (int i=0;i<groups.length;i++){
+                if (groups[i].removed == false){
+                    groupsToReturn.add(groups[i]);
+                }
+            }
+
+            GroupEntry[] groupEntries = new GroupEntry[groupsToReturn.size()];
+            for (int i=0;i<groupEntries.length;i++){
+                groupEntries[i] = groupsToReturn.get(i);
+            }
+
+            return groupEntries;
         }
         catch(JSONException e){
             Log.e(LOG_TAG, e.toString());

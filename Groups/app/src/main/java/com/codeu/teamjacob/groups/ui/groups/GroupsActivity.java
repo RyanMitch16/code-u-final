@@ -1,8 +1,11 @@
 package com.codeu.teamjacob.groups.ui.groups;
 
 import android.accounts.Account;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -24,7 +28,11 @@ import com.codeu.teamjacob.groups.ui.Utility;
 import com.codeu.teamjacob.groups.ui.lists.ListsActivity;
 import com.codeu.teamjacob.groups.ui.login.LoginActivity;
 
-public class GroupsActivity extends AppCompatActivity implements GroupsFragment.Callback, GroupEntryAdapter.Callback{
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+public class GroupsActivity extends AppCompatActivity implements GroupsFragment.Callback, GroupEntryAdapter.Callback {
 
     //The log tag of the class
     public static final String LOG_TAG = GroupsActivity.class.getSimpleName();
@@ -33,7 +41,16 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
 
     public static final int REQUEST_NEW_GROUP = 0;
 
+<<<<<<< Updated upstream
+    private static final int REQUEST_CODE = 1;
 
+    private Bitmap bitmap;
+
+    private ImageView imageView;
+
+=======
+    String userKey;
+>>>>>>> Stashed changes
     DrawerLayout mDrawerLayout;
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -44,14 +61,13 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         final GroupsActivity thisActivity = this;
 
         //Get the user key
-        String userKey = GroupsSyncAccount.getUserKey(this);
+        userKey = GroupsSyncAccount.getUserKey(this);
 
         //Check if the user is not logged in
-        if (userKey.equals("")){
+        if (userKey.equals("")) {
 
             //Redirect to the login page
             Intent intent = new Intent(this, LoginActivity.class);
@@ -60,10 +76,12 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
             return;
         }
 
-        getSupportActionBar().setElevation(0f);
-
         setContentView(R.layout.activity_groups);
 
+        getSupportActionBar().setElevation(0f);
+
+
+        imageView = (ImageView) findViewById(R.id.profile_img);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
@@ -88,7 +106,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
         mListView = (ListView) findViewById(R.id.drawer_list);
 
         mListView.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_item, R.id.drawer_item_text_view, new String[]{"Log out"}));
+                R.layout.drawer_item, R.id.drawer_item_text_view, new String[]{"Change Icon", "Log out"}));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -96,7 +114,16 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0){
+                if (position == 0) {
+<<<<<<< Updated upstream
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(intent, REQUEST_CODE);
+                } else if (position == 1) {
+=======
+>>>>>>> Stashed changes
                     GroupsSyncAccount.removeAccount(thisActivity);
                     Intent intent = new Intent(thisActivity, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -104,8 +131,6 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
                 }
             }
         });
-
-
     }
 
     @Override
@@ -127,7 +152,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if (!userKey.equals("")) {
+            mDrawerToggle.syncState();
+        }
     }
 
     @Override
@@ -158,12 +185,30 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_NEW_GROUP){
+        if (requestCode == REQUEST_NEW_GROUP) {
 
-            GroupsFragment groupsFragment =  ((GroupsFragment)getSupportFragmentManager()
+            GroupsFragment groupsFragment = ((GroupsFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.groups_fragment));
             groupsFragment.reloadData();
-        }
+        } else if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK)
+            try {
+                // We need to recyle unused bitmaps
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+                InputStream stream = getContentResolver().openInputStream(
+                        data.getData());
+                bitmap = BitmapFactory.decodeStream(stream);
+                stream.close();
+                
+                imageView.setImageBitmap(bitmap);
+                Log.e("BITMAP",bitmap + "");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -189,7 +234,7 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_new_group) {
             Intent newGroup = new Intent(this, CreateGroupPopup.class);
-            startActivityForResult(newGroup,REQUEST_NEW_GROUP);
+            startActivityForResult(newGroup, REQUEST_NEW_GROUP);
             return true;
         }
 

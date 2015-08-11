@@ -36,6 +36,7 @@ public class GroupDatabase {
     public static final String COLUMN_GROUP_USERS = "user_ids";
     public static final String COLUMN_GROUP_PENDING_USERS = "pending_user_ids";
     public static final String COLUMN_GROUP_VERSION = "group_version";
+    public static final String COLUMN_GROUP_REMOVED = "group_removed";
 
     //The variables for the index of the property columns
     public static final int COL_GROUP_KEY;
@@ -43,6 +44,7 @@ public class GroupDatabase {
     public static final int COL_GROUP_USERS;
     public static final int COL_GROUP_PENDING_USERS;
     public static final int COL_GROUP_VERSION;
+    public static final int COL_GROUP_REMOVED;
 
     //Add the projections to the columns to return
     static {
@@ -51,7 +53,12 @@ public class GroupDatabase {
         COL_GROUP_USERS = database.addProjection(COLUMN_GROUP_USERS);
         COL_GROUP_PENDING_USERS = database.addProjection(COLUMN_GROUP_PENDING_USERS);
         COL_GROUP_VERSION = database.addProjection(COLUMN_GROUP_VERSION);
+        COL_GROUP_REMOVED = database.addProjection(COLUMN_GROUP_REMOVED);
     }
+
+    public static final int GROUP_REMOVED_FALSE = 0;
+    public static final int GROUP_REMOVED_TRUE = 1;
+
 
     /**
      * Query the database for users
