@@ -159,12 +159,8 @@ public class GroupEntryAdapter extends EntryAdapter<GroupEntry> {
             });
         }
 
-        if (GroupDatabase.getById(getContext(), getItem(position).getId()).photo != null){
+        if (GroupDatabase.getById(getContext(), getItem(position).getId()).photo != null) {
             holder.groupPhoto.setImageBitmap(getItem(position).photo);
-            Log.d("OOO",Utility.bitMapToString(GroupDatabase.getById(getContext(), getItem(position).getId()).photo));
-        }
-        else{
-            Log.d("MMMM", "null");
         }
 
         return view;

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -133,6 +134,8 @@ public class EditGroupPopup extends PopupActivity {
             GroupDatabase.put(this, groupEntry);
 
             GroupsSyncAdapter.syncGroupSetImage(this, groupId);
+
+            Log.d("BEFORE",Utility.bitMapToString(groupEntry.photo));
 
 
         } catch (FileNotFoundException e) {

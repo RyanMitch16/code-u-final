@@ -150,13 +150,22 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
                             JSONObject group = groups.getJSONObject(i);
 
-                            GroupEntry groupEntry = GroupDatabase.getByKey(getContext(),group.getString("group_key"));
+                            GroupEntry groupEntry = GroupDatabase.getByKey(getContext(), group.getString("group_key"));
                             if (groupEntry == null){
                                 groupEntry = new GroupEntry(group.getString("group_key"),
                                         group.getString("group_name"),
                                         group.getString("group_usernames"),
                                         group.getString("group_pending_usernames"),
                                         group.getLong("group_version"));
+
+                                String photoStr = group.getString("group_photo");
+                                if (photoStr.equals("")){
+                                    groupEntry.photo = null;
+                                    groupEntry.photoVersion = 0;
+                                } else {
+                                    groupEntry.photo = Utility.stringToBitMap(photoStr);
+                                    groupEntry.photoVersion = group.getLong("group_photo_version");
+                                }
 
                                 Log.e(LOG_TAG+"ZZZZZZZZZZZ",groupEntry.pendingUsers.toString());
                                 Log.e(LOG_TAG+"ZZZZZZZZZZZ",groupEntry.users.toString());
@@ -165,8 +174,24 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                                 groupEntry.users = new JSONArray(group.getString("group_usernames"));
                                 groupEntry.pendingUsers = new JSONArray(group.getString("group_pending_usernames"));
                                 groupEntry.version = group.getLong("group_version");
+
+
+                                String photoStr = group.getString("group_photo");
+                                photoStr = photoStr.replace(" ","+");
+
+                                Log.e("PP",photoStr);
+                                if (photoStr.equals("")){
+                                    groupEntry.photo = null;
+                                    groupEntry.photoVersion = 0;
+                                } else {
+                                    groupEntry.photo = Utility.stringToBitMap(photoStr);
+                                    groupEntry.photoVersion = group.getLong("group_photo_version");
+                                }
                             }
                             GroupDatabase.put(getContext(), groupEntry);
+
+                            GroupEntry g = GroupDatabase.getById(getContext(), groupEntry.getId());
+                            Log.e(LOG_TAG, g.photo.toString());
 
                             userEntry.addGroup(groupEntry.getId());
                             UserDatabase.put(getContext(), userEntry);
@@ -394,7 +419,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection connection = null;
         try {
             //Make the request
-            connection = HttpRequest.get(url);
+            connection = HttpRequest.post(url);
             connection.getResponseCode();
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());
@@ -420,7 +445,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection connection = null;
         try {
             //Make the request
-            connection = HttpRequest.get(url);
+            connection = HttpRequest.post(url);
             connection.getResponseCode();
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());

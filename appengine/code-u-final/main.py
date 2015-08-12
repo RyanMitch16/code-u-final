@@ -145,7 +145,7 @@ class CreatGroupHandler(webapp2.RequestHandler):
             self.response.write(str(e))
 
 class EditGroupHandler(webapp2.RequestHandler):
-    def get(self):
+    def post(self):
 
         # Check if the list name is provided
         group_key = self.request.get('group_key')
