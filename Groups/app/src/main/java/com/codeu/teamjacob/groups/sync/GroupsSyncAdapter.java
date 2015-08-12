@@ -805,6 +805,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION,ACTION_GROUP_CREATE);
         bundle.putString(EXTRA_USER_KEY, GroupsSyncAccount.getUserKey(context));
@@ -821,6 +823,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         JSONArray userNamesJSON = new JSONArray();
         for (String userName : userNames) {
@@ -843,6 +847,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_USER_GET_GROUPS);
         bundle.putString(EXTRA_USER_KEY, userKey);
@@ -858,6 +864,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_CONFIRM);
         bundle.putString(EXTRA_USER_KEY, userKey);
@@ -876,6 +884,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION,ACTION_LIST_CREATE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -893,6 +903,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_ITEM_ADD);
         bundle.putLong(EXTRA_ITEM_ID, itemId);
@@ -909,6 +921,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_LEAVE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -925,6 +939,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_RENAME);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -941,6 +957,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_SET_IMAGE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -956,6 +974,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_LIST_DELETE);
         bundle.putLong(EXTRA_LIST_ID, listId);
@@ -971,6 +991,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_LIST_RENAME);
         bundle.putLong(EXTRA_LIST_ID, listId);
@@ -987,6 +1009,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_ITEM_DELETE);
         bundle.putLong(EXTRA_LIST_ID, listId);
@@ -1018,6 +1042,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_ITEM_CHECK);
         bundle.putLong(EXTRA_LIST_ID, listId);
