@@ -512,7 +512,6 @@ class ItemList(ndb.Model):
         item_list.key.delete()
 
 
-
     @staticmethod
     def update_content(list_key, changed_content):
         """Adds and deletes items from the list (see readme for more info)

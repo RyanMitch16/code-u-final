@@ -62,7 +62,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int ACTION_GROUP_LEAVE = 6;
     public static final int ACTION_GROUP_RENAME = 7;
     public static final int ACTION_GROUP_SET_IMAGE = 8;
-
+    public static final int ACTION_LIST_DELETE = 9;
 
     //Default constructor
     public GroupsSyncAdapter(Context context, boolean autoInitialize) {
@@ -348,6 +348,19 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
                 break;
+
+                case ACTION_LIST_DELETE: {
+
+                    HttpURLConnection con = listDelete(extras.getLong(EXTRA_LIST_ID));
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode >= 200 && responseCode <= 300) {
+
+                        ListEntry listEntry = ListDatabase.getById(getContext(), extras.getLong(EXTRA_LIST_ID));
+                        ListDatabase.delete(getContext(), listEntry);
+
+                    }
+                }
             }
         } catch (IOException e){
             Log.e(LOG_TAG, e.toString());
@@ -578,6 +591,30 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
+    private HttpURLConnection listDelete(long listId){
+
+        //Build the url for logging in as the user
+        Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
+                .appendPath("list")
+                .appendPath("delete")
+                .appendQueryParameter("list_key", ListDatabase.getById(getContext(), listId).listKey)
+                .build();
+        Log.d(LOG_TAG, url.toString());
+
+        //Attempt to login as the user
+        HttpURLConnection connection = null;
+        try {
+            //Make the request
+            connection = HttpRequest.get(url);
+            connection.getResponseCode();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        //Return the connection to the url
+        return connection;
+
+    }
+
     private HttpURLConnection itemAdd(long listId, long itemId){
 
         ItemEntry itemEntry = ItemDatabase.getById(getContext(), itemId);
@@ -789,7 +826,22 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
+    public static void syncListDelete(Context context, long listId){
 
+        //Get the user account key
+        Account account = GroupsSyncAccount.getSyncAccount(context);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+
+        bundle.putInt(EXTRA_ACTION, ACTION_LIST_DELETE);
+        bundle.putLong(EXTRA_LIST_ID, listId);
+
+        //Request to sync the lists
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+
+    }
 
 
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {

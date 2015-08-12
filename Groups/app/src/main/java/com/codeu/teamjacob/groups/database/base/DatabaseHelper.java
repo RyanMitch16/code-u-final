@@ -64,7 +64,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ListDatabase.COLUMN_LIST_KEY + " TEXT , " +
                 ListDatabase.COLUMN_LIST_NAME + " TEXT NOT NULL," +
                 ListDatabase.COLUMN_GROUP_ID + " INTEGER, " +
-                ListDatabase.COLUMN_LIST_VERSION + " INTEGER " +
+                ListDatabase.COLUMN_LIST_VERSION + " INTEGER, " +
+                ListDatabase.COLUMN_LIST_DELETED + " INTEGER " +
                 " )";
         sqLiteDatabase.execSQL(SQL_CREATE_LIST_TABLE);
 

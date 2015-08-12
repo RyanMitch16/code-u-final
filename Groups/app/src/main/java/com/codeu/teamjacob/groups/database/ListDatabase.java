@@ -36,12 +36,14 @@ public class ListDatabase {
     public static final String COLUMN_LIST_NAME = "list_name";
     public static final String COLUMN_GROUP_ID = "group_id";
     public static final String COLUMN_LIST_VERSION = "list_version";
+    public static final String COLUMN_LIST_DELETED = "list_deleted";
 
     //The variables for the index of the property columns
     public static final int COL_LIST_KEY;
     public static final int COL_LIST_NAME;
     public static final int COL_GROUP_ID;
     public static final int COL_LIST_VERSION;
+    public static final int COL_LIST_DELETED;
 
     //Add the projections to the columns to return
     static {
@@ -49,7 +51,11 @@ public class ListDatabase {
         COL_LIST_NAME = database.addProjection(COLUMN_LIST_NAME);
         COL_GROUP_ID = database.addProjection(COLUMN_GROUP_ID);
         COL_LIST_VERSION = database.addProjection(COLUMN_LIST_VERSION);
+        COL_LIST_DELETED = database.addProjection(COLUMN_LIST_DELETED);
     }
+
+    public static final int DELETED_FALSE = 0;
+    public static final int DELETED_TRUE = 1;
 
     /**
      * Query the database for users

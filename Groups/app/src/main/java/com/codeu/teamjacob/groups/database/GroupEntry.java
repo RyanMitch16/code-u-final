@@ -14,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class GroupEntry extends Entry {
 
     //Set the log tag
@@ -126,8 +128,23 @@ public class GroupEntry extends Entry {
                             +ListDatabase.COLUMN_LIST_KEY+" != ? ",
                     new String[]{getId()+"","null"}, null);
         }
-        return ListDatabase.query(context, ListDatabase.COLUMN_GROUP_ID+" = ? ",
+
+        ArrayList<ListEntry> listsToReturn = new ArrayList<ListEntry>();
+        ListEntry[] lists = ListDatabase.query(context, ListDatabase.COLUMN_GROUP_ID+" = ? ",
                 new String[]{getId()+""}, null);
+
+        for (int i=0;i<lists.length;i++){
+            if (lists[i].removed == false){
+                listsToReturn.add(lists[i]);
+            }
+        }
+
+        ListEntry[] listEntries = new ListEntry[listsToReturn.size()];
+        for (int i=0;i<listEntries.length;i++){
+            listEntries[i] = listsToReturn.get(i);
+        }
+
+        return listEntries;
     }
 
     public void addUser(String userName) {

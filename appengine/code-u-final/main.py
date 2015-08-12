@@ -104,6 +104,24 @@ class ItemListCreateHandler(webapp2.RequestHandler):
             self.response.set_status(406)
             self.response.write(str(e))
 
+class ItemListDeleteHandler(webapp2.RequestHandler):
+    def get(self):
+        # Check if the list name is provided
+        list_key = self.request.get('list_key')
+        
+        try:
+            # Add the new list to the database
+            grocery_list_key = ItemList.delete(list_key)
+
+            # Respond with the list key
+            self.response.set_status(201)
+            self.response.write(grocery_list_key)
+        except Exception as e:
+            # Respond with the error
+            self.response.set_status(406)
+            self.response.write(str(e))
+    
+
 
 class ItemListEditHandler(webapp2.RequestHandler):
     def get(self):
@@ -219,6 +237,7 @@ app = webapp2.WSGIApplication([
     ('/group/user/confirm', ConfirmGroupHandler),
 
     ('/list/create', ItemListCreateHandler),
+    ('/list/delete', ItemListDeleteHandler),
     ('/list/edit', ItemListEditHandler),
     ('/', MainHandler)
 ], debug=True)

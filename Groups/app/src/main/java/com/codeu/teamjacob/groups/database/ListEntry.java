@@ -21,6 +21,7 @@ public class ListEntry extends Entry {
     public String listName;
     public long groupId;
     public long version;
+    public boolean removed;
 
     //Default constructor
     public ListEntry(){ }
@@ -36,6 +37,7 @@ public class ListEntry extends Entry {
         this.listName = listName;
         this.groupId = groupId;
         this.version = version;
+        removed = false;
     }
 
     /**
@@ -49,6 +51,7 @@ public class ListEntry extends Entry {
         listName = values.getString(ListDatabase.COL_LIST_NAME);
         groupId = values.getLong(ListDatabase.COL_GROUP_ID);
         version = values.getLong(ListDatabase.COL_LIST_VERSION);
+        removed = values.getInt(ListDatabase.COL_LIST_DELETED) == ListDatabase.DELETED_TRUE;
     }
 
     /**
@@ -64,6 +67,7 @@ public class ListEntry extends Entry {
         listValues.put(ListDatabase.COLUMN_LIST_NAME, listName);
         listValues.put(ListDatabase.COLUMN_GROUP_ID, groupId);
         listValues.put(ListDatabase.COLUMN_LIST_VERSION, version);
+        listValues.put(ListDatabase.COLUMN_LIST_DELETED, removed ? ListDatabase.DELETED_TRUE : ListDatabase.DELETED_FALSE);
         return listValues;
 
     }
