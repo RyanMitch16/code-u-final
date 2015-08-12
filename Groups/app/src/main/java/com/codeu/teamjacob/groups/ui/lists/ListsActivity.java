@@ -81,6 +81,13 @@ public class ListsActivity extends AppCompatActivity implements ListsFragment.Ca
     }
 
     @Override
+    public void onItemLongSelected(ListEntry listEntry) {
+        Intent intent = new Intent(this, EditListPopup.class);
+        intent.putExtra(EditListPopup.EXTRA_LIST_ID, listEntry.getId());
+        startActivity(intent);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_NEW_LIST){

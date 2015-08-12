@@ -36,11 +36,12 @@
                 android:src="@mipmap/ic_action_person" />
 
             <TextView
+                android:id="@+id/username_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/profile_img"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="16dp"
                 android:text="Username"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />

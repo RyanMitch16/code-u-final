@@ -43,7 +43,7 @@ public class ItemDatabase {
     public static final int COL_ITEM_LIST_ID;
     public static final int COL_ITEM_NAME;
     public static final int COL_ITEM_PUT;
-    public static final int COL_ITEM_CHECKEd;
+    public static final int COL_ITEM_CHECKED;
 
     public static final int PUT_TRUE = 1;
     public static final int PUT_FALSE = 0;
@@ -57,7 +57,7 @@ public class ItemDatabase {
         COL_ITEM_LIST_ID = database.addProjection(COLUMN_ITEM_LIST_ID);
         COL_ITEM_NAME = database.addProjection(COLUMN_ITEM_NAME);
         COL_ITEM_PUT = database.addProjection(COLUMN_ITEM_PUT);
-        COL_ITEM_CHECKEd = database.addProjection(COLUMN_ITEM_CHECKED);
+        COL_ITEM_CHECKED = database.addProjection(COLUMN_ITEM_CHECKED);
     }
 
     /**

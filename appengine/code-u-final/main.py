@@ -71,7 +71,7 @@ class UserLoginHandler(webapp2.RequestHandler):
             self.response.write(str(e))
 
 class UserGetGroupsHandler(webapp2.RequestHandler):
-    def get(self):
+    def post(self):
         user_key = self.request.get('user_key')
         versions = self.request.get('versions')
 
@@ -121,7 +121,23 @@ class ItemListDeleteHandler(webapp2.RequestHandler):
             self.response.set_status(406)
             self.response.write(str(e))
     
+class ItemListRenameHandler(webapp2.RequestHandler):
+    def get(self):
+        # Check if the list name is provided
+        list_key = self.request.get('list_key')
+        list_name = self.request.get('list_name')
+        
+        try:
+            # Add the new list to the database
+            grocery_list_key = ItemList.rename(list_key, list_name)
 
+            # Respond with the list key
+            self.response.set_status(201)
+            self.response.write(grocery_list_key)
+        except Exception as e:
+            # Respond with the error
+            self.response.set_status(406)
+            self.response.write(str(e))
 
 class ItemListEditHandler(webapp2.RequestHandler):
     def get(self):

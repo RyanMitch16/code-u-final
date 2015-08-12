@@ -53,6 +53,8 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public static final String EXTRA_ITEM_ID = "EXTRA_ITEM_ID";
 
+    public static final String EXTRA_ITEMS_TO_DELETE = "EXTRA_ITEMS_TO_DELETE";
+
     public static final int ACTION_GROUP_CREATE = 0;
     public static final int ACTION_GROUP_ADD_USER = 1;
     public static final int ACTION_GROUP_CONFIRM = 2;
@@ -63,6 +65,9 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
     public static final int ACTION_GROUP_RENAME = 7;
     public static final int ACTION_GROUP_SET_IMAGE = 8;
     public static final int ACTION_LIST_DELETE = 9;
+    public static final int ACTION_LIST_RENAME = 11;
+    public static final int ACTION_ITEM_DELETE = 12;
+    public static final int ACTION_ITEM_CHECK = 13;
 
     //Default constructor
     public GroupsSyncAdapter(Context context, boolean autoInitialize) {
@@ -180,18 +185,20 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                                 photoStr = photoStr.replace(" ","+");
 
                                 Log.e("PP",photoStr);
-                                if (photoStr.equals("")){
-                                    groupEntry.photo = null;
-                                    groupEntry.photoVersion = 0;
-                                } else {
-                                    groupEntry.photo = Utility.stringToBitMap(photoStr);
-                                    groupEntry.photoVersion = group.getLong("group_photo_version");
+                                if (group.getLong("group_photo_version") > groupEntry.photoVersion){
+                                    if (photoStr.equals("")){
+                                        groupEntry.photo = null;
+                                        groupEntry.photoVersion = 0;
+                                    } else {
+                                        groupEntry.photo = Utility.stringToBitMap(photoStr);
+                                        groupEntry.photoVersion = group.getLong("group_photo_version");
+                                    }
                                 }
                             }
                             GroupDatabase.put(getContext(), groupEntry);
 
-                            GroupEntry g = GroupDatabase.getById(getContext(), groupEntry.getId());
-                            Log.e(LOG_TAG, g.photo.toString());
+                            //GroupEntry g = GroupDatabase.getById(getContext(), groupEntry.getId());
+                            //Log.e(LOG_TAG, g.photo.toString());
 
                             userEntry.addGroup(groupEntry.getId());
                             UserDatabase.put(getContext(), userEntry);
@@ -361,6 +368,42 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     }
                 }
+
+                break;
+
+                case ACTION_LIST_RENAME: {
+
+                    HttpURLConnection con = listRename(extras.getLong(EXTRA_LIST_ID),
+                            extras.getString(EXTRA_LIST_NAME));
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode >= 200 && responseCode <= 300) {
+
+                    }
+                }
+
+                break;
+
+                case ACTION_ITEM_DELETE : {
+
+                    HttpURLConnection con = itemDelete(extras.getLong(EXTRA_LIST_ID),
+                            extras.getString(EXTRA_ITEMS_TO_DELETE));
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode >= 200 && responseCode <= 300) {
+
+                        ItemDatabase.deleteBulk(getContext(),ItemDatabase.COLUMN_ITEM_LIST_ID + " != ? ",
+                                new String[]{"-1"});
+                    }
+                }
+
+                case ACTION_ITEM_CHECK : {
+
+                    HttpURLConnection con = itemChecked(extras.getLong(EXTRA_LIST_ID),
+                            extras.getLong(EXTRA_ITEM_ID));
+
+                }
+
             }
         } catch (IOException e){
             Log.e(LOG_TAG, e.toString());
@@ -529,7 +572,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection connection = null;
         try {
             //Make the request
-            connection = HttpRequest.get(url);
+            connection = HttpRequest.post(url);
             connection.getResponseCode();
         } catch (Exception e) {
             Log.e(LOG_TAG, e.toString());
@@ -615,6 +658,34 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
     }
 
+    private HttpURLConnection listRename(long listId, String listName){
+
+        ListEntry listEntry =  ListDatabase.getById(getContext(), listId);
+
+        //Build the url for logging in as the user
+        Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
+                .appendPath("list")
+                .appendPath("edit")
+                .appendQueryParameter("list_key", listEntry.listKey)
+                .appendQueryParameter("list_name", listName)
+                .build();
+
+        Log.d(LOG_TAG, url.toString());
+
+        //Attempt to login as the user
+        HttpURLConnection connection = null;
+        try {
+            //Make the request
+            connection = HttpRequest.get(url);
+            connection.getResponseCode();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        //Return the connection to the url
+        return connection;
+
+    }
+
     private HttpURLConnection itemAdd(long listId, long itemId){
 
         ItemEntry itemEntry = ItemDatabase.getById(getContext(), itemId);
@@ -639,6 +710,71 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                 .appendPath("edit")
                 .appendQueryParameter("list_key", ListDatabase.getById(getContext(), listId).listKey)
                 .appendQueryParameter("changed_content", item.toString())
+                .build();
+        Log.d(LOG_TAG, url.toString());
+
+        //Attempt to login as the user
+        HttpURLConnection connection = null;
+        try {
+            //Make the request
+            connection = HttpRequest.get(url);
+            connection.getResponseCode();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        //Return the connection to the url
+        return connection;
+
+    }
+
+    private HttpURLConnection itemChecked(long listId, long itemId){
+
+        ItemEntry itemEntry = ItemDatabase.getById(getContext(), itemId);
+
+        JSONArray item = new JSONArray();
+
+        JSONObject itemValues = new JSONObject();
+        try {
+            itemValues.put("_id", itemEntry.itemAppEngineId);
+            itemValues.put("_op", "checked");
+            itemValues.put("checked", itemEntry.isChecked ? ItemDatabase.CHECKED : ItemDatabase.UNCHECKED);
+
+            item.put(itemValues);
+        } catch (Exception e){
+            Log.d(LOG_TAG,e.toString());
+        }
+
+        //Build the url for logging in as the user
+        Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
+                .appendPath("list")
+                .appendPath("edit")
+                .appendQueryParameter("list_key", ListDatabase.getById(getContext(), listId).listKey)
+                .appendQueryParameter("changed_content", item.toString())
+                .build();
+        Log.d(LOG_TAG, url.toString());
+
+        //Attempt to login as the user
+        HttpURLConnection connection = null;
+        try {
+            //Make the request
+            connection = HttpRequest.get(url);
+            connection.getResponseCode();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, e.toString());
+        }
+        //Return the connection to the url
+        return connection;
+
+    }
+
+    private HttpURLConnection itemDelete(long listId, String itemsToDelete){
+
+        //Build the url for logging in as the user
+        Uri url = Uri.parse(GroupsRequest.BASE_URL).buildUpon()
+                .appendPath("list")
+                .appendPath("edit")
+                .appendQueryParameter("list_key", ListDatabase.getById(getContext(), listId).listKey)
+                .appendQueryParameter("changed_content", itemsToDelete)
                 .build();
         Log.d(LOG_TAG, url.toString());
 
@@ -837,6 +973,75 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
 
         bundle.putInt(EXTRA_ACTION, ACTION_LIST_DELETE);
         bundle.putLong(EXTRA_LIST_ID, listId);
+
+        //Request to sync the lists
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+
+    }
+
+    public static void syncListRename(Context context, long listId, String listName){
+
+        //Get the user account key
+        Account account = GroupsSyncAccount.getSyncAccount(context);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+
+        bundle.putInt(EXTRA_ACTION, ACTION_LIST_RENAME);
+        bundle.putLong(EXTRA_LIST_ID, listId);
+        bundle.putString(EXTRA_LIST_NAME, listName);
+
+        //Request to sync the lists
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+
+    }
+
+    public static void syncItemsDelete(Context context, long listId, String[] appEngineIds){
+
+        //Get the user account key
+        Account account = GroupsSyncAccount.getSyncAccount(context);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+
+        bundle.putInt(EXTRA_ACTION, ACTION_ITEM_DELETE);
+        bundle.putLong(EXTRA_LIST_ID, listId);
+
+        JSONArray items = new JSONArray();
+        try {
+            for (int i = 0; i < appEngineIds.length; i++) {
+
+                JSONObject item = new JSONObject();
+                item.put("_op", "delete");
+                item.put("_id", appEngineIds[i]);
+
+                items.put(item);
+            }
+        } catch (Exception e){
+            Log.e(LOG_TAG,e.toString());
+        }
+
+        bundle.putString(EXTRA_ITEMS_TO_DELETE, items.toString());
+
+        //Request to sync the lists
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+
+    }
+
+    public static void syncItemChecked(Context context, long listId, long itemId){
+
+        //Get the user account key
+        Account account = GroupsSyncAccount.getSyncAccount(context);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+
+        bundle.putInt(EXTRA_ACTION, ACTION_ITEM_CHECK);
+        bundle.putLong(EXTRA_LIST_ID, listId);
+        bundle.putLong(EXTRA_ITEM_ID, itemId);
 
         //Request to sync the lists
         ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);

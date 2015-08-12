@@ -23,9 +23,11 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.codeu.teamjacob.groups.R;
 import com.codeu.teamjacob.groups.database.GroupEntry;
+import com.codeu.teamjacob.groups.database.UserDatabase;
 import com.codeu.teamjacob.groups.sync.GroupsPeriodicSyncService;
 import com.codeu.teamjacob.groups.sync.GroupsSyncAccount;
 import com.codeu.teamjacob.groups.ui.Utility;
@@ -135,6 +137,9 @@ public class GroupsActivity extends AppCompatActivity implements GroupsFragment.
                 }
             }
         });
+
+        TextView usernameTextView = (TextView) findViewById(R.id.username_text_view);
+        usernameTextView.setText(UserDatabase.getByKey(this, userKey).username);
     }
 
     @Override

@@ -125,6 +125,22 @@
                 android:value=".ui.lists.ListsActivity" />
         </activity>
 
+        <activity android:name=".ui.lists.EditListPopup"
+            android:parentActivityName=".ui.lists.ListsActivity"
+            android:theme="@style/AppTheme.Popup.Dim">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.lists.ListsActivity" />
+        </activity>
+
+        <activity android:name=".ui.lists.ListRenamePopup"
+            android:parentActivityName=".ui.lists.ListsActivity"
+            android:theme="@style/AppTheme.Popup.Dim">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.lists.ListsActivity" />
+        </activity>
+
         <activity android:name=".ui.items.CreateItemPopup"
             android:parentActivityName=".ui.items.ItemsActivity"
             android:theme="@style/AppTheme.Popup.Dim">

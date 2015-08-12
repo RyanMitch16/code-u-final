@@ -463,6 +463,7 @@ class ItemList(ndb.Model):
     UPDATE_CONTENT_OPCODE = "_op"
     UPDATE_CONTENT_OPCODE_ADD = "add"
     UPDATE_CONTENT_OPCODE_DELETE = "delete"
+    UPDATE_CONTENT_OPCODE_CHECKED = "checked"
     UPDATE_CONTENT_ID = "_id"
 
     @staticmethod
@@ -511,6 +512,20 @@ class ItemList(ndb.Model):
 
         item_list.key.delete()
 
+    @staticmethod
+    def rename(list_key, list_name):
+
+        #Find the user to add the key to
+        item_list = ItemList.find_by_key(list_key)
+        if (item_list == None):
+            raise Exception("Invalid list key")
+
+        item_list.list_name = list_name
+        item_list.increment_version()
+        item_list.put()
+
+        #Figuee out a way to represent deletions
+       
 
     @staticmethod
     def update_content(list_key, changed_content):
@@ -545,6 +560,11 @@ class ItemList(ndb.Model):
                     if ((ItemList.UPDATE_CONTENT_ID in item2) and (item2[ItemList.UPDATE_CONTENT_ID] == item[ItemList.UPDATE_CONTENT_ID])):
                         content.remove(item2)
                         break
+
+            elif (opcode == ItemList.UPDATE_CONTENT_OPCODE_CHECKED):
+            	for item2 in content:
+                    if ((ItemList.UPDATE_CONTENT_ID in item2) and (item2[ItemList.UPDATE_CONTENT_ID] == item[ItemList.UPDATE_CONTENT_ID])):
+                    	item2["checked"] = item["checked"]
 
         #Increment the version number
         item_list.increment_version()

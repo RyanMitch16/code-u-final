@@ -21,6 +21,7 @@ import com.codeu.teamjacob.groups.database.GroupEntry;
 import com.codeu.teamjacob.groups.database.ItemEntry;
 import com.codeu.teamjacob.groups.database.ListDatabase;
 import com.codeu.teamjacob.groups.database.ListEntry;
+import com.codeu.teamjacob.groups.sync.GroupsSyncAdapter;
 import com.codeu.teamjacob.groups.ui.EntryLoader;
 
 public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallbacks<ItemEntry[]> {
@@ -84,6 +85,12 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
         groupList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                menuOptions.findItem(R.id.action_edit_mode).setVisible(false);
+                menuOptions.findItem(R.id.action_trash_items).setVisible(true);
+                menuOptions.findItem(R.id.action_select_all_items).setVisible(true);
+
+                itemEntryAdapter.toggleEditMode();
+                editMode = true;
                 //((Callback) getActivity()).onItemLongClick((GroupEntry) parent.getItemAtPosition(position));
                 return false;
             }
@@ -184,9 +191,12 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
                 editMode = true;
                 return true;
             case R.id.action_trash_items:
-                itemEntryAdapter.delete();
+                String[] itemsToDeleteIds = itemEntryAdapter.delete();
+                if (itemsToDeleteIds.length > 0) {
+                    GroupsSyncAdapter.syncItemsDelete(getActivity(), listEntry.getId(), itemsToDeleteIds);
+                }
 
-                return true;
+            return true;
             case R.id.action_select_all_items:
                 itemEntryAdapter.selectAll(true);
                 return true;

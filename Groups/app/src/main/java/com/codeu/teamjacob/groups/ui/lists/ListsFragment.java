@@ -32,6 +32,7 @@ public class ListsFragment extends Fragment implements LoaderManager.LoaderCallb
      */
     public interface Callback{
         void onItemSelected(ListEntry listEntry);
+        void onItemLongSelected(ListEntry listEntry);
     }
 
     //The list view and adapter that hold all the list entries
@@ -86,6 +87,18 @@ public class ListsFragment extends Fragment implements LoaderManager.LoaderCallb
                 ((Callback) getActivity()).onItemSelected(listEntry);
             }
         });
+
+        listEntryView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                ListEntry listEntry = (ListEntry) parent.getItemAtPosition(position);
+
+                ((Callback) getActivity()).onItemLongSelected(listEntry);
+                return true;
+            }
+        });
+
 
         return rootView;
 

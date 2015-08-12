@@ -46,7 +46,7 @@ public class ItemEntry extends Entry {
         itemName = values.getString(ItemDatabase.COL_ITEM_NAME);
         itemListId = values.getLong(ItemDatabase.COL_ITEM_LIST_ID);
         itemPut = (values.getInt(ItemDatabase.COL_ITEM_PUT)  == ItemDatabase.PUT_TRUE);
-        isChecked = (values.getInt(ItemDatabase.COL_ITEM_CHECKEd) == ItemDatabase.CHECKED);
+        isChecked = (values.getInt(ItemDatabase.COL_ITEM_CHECKED) == ItemDatabase.CHECKED);
     }
 
     /**

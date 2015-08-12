@@ -11,8 +11,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.codeu.teamjacob.groups.R;
+import com.codeu.teamjacob.groups.database.ItemDatabase;
 import com.codeu.teamjacob.groups.database.ItemEntry;
 import com.codeu.teamjacob.groups.database.ListEntry;
+import com.codeu.teamjacob.groups.sync.GroupsSyncAdapter;
 import com.codeu.teamjacob.groups.ui.EntryAdapter;
 import com.codeu.teamjacob.groups.ui.lists.ListsActivity;
 
@@ -59,13 +61,31 @@ public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
 
     @Override
     public View bindView(Context context, final int position, View view) {
-        ViewHolder holder = (ViewHolder) view.getTag();
+        final ViewHolder holder = (ViewHolder) view.getTag();
         holder.itemNameView.setText(getItem(position).itemName);
         holder.deleteBox.setVisibility(View.INVISIBLE);
         holder.completedBox.setVisibility((editMode) ? View.INVISIBLE : View.VISIBLE);
+        holder.completedBox.setChecked(getItem(position).isChecked);
 
         deleteCheckBoxes.add(holder.deleteBox);
         completedCheckBoxes.add(holder.completedBox);
+
+        holder.completedBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ItemEntry itemEntry = getItem(position);
+                itemEntry.isChecked = holder.completedBox.isChecked();
+                ItemDatabase.put(getContext(), itemEntry);
+
+                GroupsSyncAdapter.syncItemChecked(getContext(),
+                        getItem(position).itemListId, getItem(position).getId());
+
+                //if (holder.completedBox.isChecked()){
+
+                //}
+            }
+        });
 
         return view;
     }
@@ -96,13 +116,38 @@ public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
         }
     }
 
-    public void delete(){
-        for (int i=0;i<deleteCheckBoxes.size();i++){
+    public String[] delete(){
+
+        ArrayList<ItemEntry> itemsToDelete = new ArrayList<ItemEntry>();
+        int i=0;
+        while (i<deleteCheckBoxes.size()){
             CheckBox checkBox = deleteCheckBoxes.get(i);
             if (checkBox.isChecked()){
+                itemsToDelete.add(getItem(i));
                 remove(getItem(i));
+                deleteCheckBoxes.remove(i);
+                i -= 1;
             }
+            i += 1;
         }
+
+        if (itemsToDelete.size() > 0){
+
+            String[] itemsToDeleteIds = new String[itemsToDelete.size()];
+            for (int j=0;j<itemsToDelete.size();j++){
+                itemsToDeleteIds[j] = itemsToDelete.get(j).itemAppEngineId;
+                ItemEntry itemEntry = itemsToDelete.get(j);
+
+                itemEntry.itemListId = -1;
+                ItemDatabase.put(getContext(),itemEntry);
+            }
+
+
+            return itemsToDeleteIds;
+        }
+
+        return new String[0];
+
     }
 
 }
