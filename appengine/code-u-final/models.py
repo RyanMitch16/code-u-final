@@ -543,7 +543,7 @@ class ItemList(ndb.Model):
             raise Exception("Invalid list key")
 
         #Get the contents of the current grocery list
-        content = JSON.decode(item_list.content)
+        content = JSON.unquote(item_list.content)
         
         for item in changed_content:
             # Remove the hidden operation code from the item
@@ -565,6 +565,7 @@ class ItemList(ndb.Model):
             	for item2 in content:
                     if ((ItemList.UPDATE_CONTENT_ID in item2) and (item2[ItemList.UPDATE_CONTENT_ID] == item[ItemList.UPDATE_CONTENT_ID])):
                     	item2["checked"] = item["checked"]
+                    	break
 
         #Increment the version number
         item_list.increment_version()

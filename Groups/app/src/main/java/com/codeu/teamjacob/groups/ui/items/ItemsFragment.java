@@ -2,6 +2,10 @@ package com.codeu.teamjacob.groups.ui.items;
 
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -21,6 +25,7 @@ import com.codeu.teamjacob.groups.database.GroupEntry;
 import com.codeu.teamjacob.groups.database.ItemEntry;
 import com.codeu.teamjacob.groups.database.ListDatabase;
 import com.codeu.teamjacob.groups.database.ListEntry;
+import com.codeu.teamjacob.groups.sync.GroupsPeriodicSyncService;
 import com.codeu.teamjacob.groups.sync.GroupsSyncAdapter;
 import com.codeu.teamjacob.groups.ui.EntryLoader;
 
@@ -48,6 +53,16 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
     public boolean editMode;
 
     Menu menuOptions;
+
+    IntentFilter filter1 = new IntentFilter(GroupsPeriodicSyncService.BROADCAST_ACTION);
+
+    BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            reloadData();
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,14 +132,19 @@ public class ItemsFragment extends Fragment implements LoaderManager.LoaderCallb
         getLoaderManager().initLoader(GROUPS_LOADER, null, this);
     }
 
-    /**
-     * Reloads the apater when the activity resumes
-     */
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().registerReceiver(myReceiver, filter1);
         reloadData();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(myReceiver);
+    }
+
 
     /**
      * Create the loader to load the entries into the adapter

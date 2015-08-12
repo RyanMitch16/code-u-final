@@ -63,7 +63,7 @@ public class ItemEntryAdapter extends EntryAdapter<ItemEntry> {
     public View bindView(Context context, final int position, View view) {
         final ViewHolder holder = (ViewHolder) view.getTag();
         holder.itemNameView.setText(getItem(position).itemName);
-        holder.deleteBox.setVisibility(View.INVISIBLE);
+        holder.deleteBox.setVisibility((!editMode) ? View.INVISIBLE : View.VISIBLE);
         holder.completedBox.setVisibility((editMode) ? View.INVISIBLE : View.VISIBLE);
         holder.completedBox.setChecked(getItem(position).isChecked);
 

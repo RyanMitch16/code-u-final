@@ -75,8 +75,7 @@ public class ListEntry extends Entry {
     public void setItems(Context context, JSONArray items){
 
         ItemDatabase.deleteBulk(context,
-                ItemDatabase.COLUMN_ITEM_LIST_ID +" = ? AND "+
-                        ItemDatabase.COL_ITEM_PUT+" = ?",new String[]{getId()+"",ItemDatabase.PUT_TRUE+""});
+                ItemDatabase.COLUMN_ITEM_LIST_ID +" = ? ",new String[]{getId()+"",});
 
         try {
 
@@ -87,6 +86,8 @@ public class ListEntry extends Entry {
                 ItemEntry itemEntry = ItemDatabase.getByAppEngineId(context, item.getString("_id"));
 
                 if (itemEntry != null){
+                    itemEntry.isChecked = (item.getInt("checked") == ItemDatabase.CHECKED);
+                    ItemDatabase.put(context, itemEntry);
                     Log.e(LOG_TAG, "Overlap");
                     continue;
                 }

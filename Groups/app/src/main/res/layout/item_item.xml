@@ -15,7 +15,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.3"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_label_outline_black_48dp"/>
 
     <TextView
         android:id="@+id/item_name_text_view"

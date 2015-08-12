@@ -21,7 +21,7 @@ import com.codeu.teamjacob.groups.ui.Utility;
 import com.codeu.teamjacob.groups.ui.items.ItemsActivity;
 import com.codeu.teamjacob.groups.ui.items.ItemsFragment;
 
-public class ListsActivity extends AppCompatActivity implements ListsFragment.Callback{
+public class ListsActivity extends AppCompatActivity implements ListsFragment.Callback, ListsEntryAdapter.Callback{
 
     //The log tag of the class
     public static final String LOG_TAG = ListsActivity.class.getSimpleName();
@@ -93,6 +93,11 @@ public class ListsActivity extends AppCompatActivity implements ListsFragment.Ca
         if (requestCode == REQUEST_NEW_LIST){
             //sopenList(data.getLongExtra(EXTRA_NEW_LIST, -1));
         }
+    }
+
+    @Override
+    public void onEditPressed(ListEntry listEntry) {
+        onItemLongSelected(listEntry);
     }
 
     @Override

@@ -220,13 +220,13 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                                             list.getLong("list_version"));
 
                                     listEntry.setItems(getContext(),new JSONArray(list.getString("list_contents")));
-                                    Log.e(LOG_TAG, (new JSONArray(list.getString("list_contents")).toString()));
+                                    //Log.e(LOG_TAG, (new JSONArray(list.getString("list_contents")).toString()));
                                 } else {
                                     listEntry.listKey = list.getString("list_key");
                                     listEntry.listName = list.getString("list_name");
                                     listEntry.version = list.getLong("list_version");
                                     listEntry.setItems(getContext(),new JSONArray(list.getString("list_contents")));
-                                    Log.e(LOG_TAG, (new JSONArray(list.getString("list_contents")).toString()));
+                                    //Log.e(LOG_TAG, (new JSONArray(list.getString("list_contents")).toString()));
                                 }
 
                                 Log.d(LOG_TAG+"VVVV",list.getString("list_key"));
@@ -397,12 +397,18 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
 
+                break;
+
                 case ACTION_ITEM_CHECK : {
 
                     HttpURLConnection con = itemChecked(extras.getLong(EXTRA_LIST_ID),
                             extras.getLong(EXTRA_ITEM_ID));
 
+                    int responseCode = con.getResponseCode();
+
                 }
+
+                break;
 
             }
         } catch (IOException e){
@@ -776,7 +782,7 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
                 .appendQueryParameter("list_key", ListDatabase.getById(getContext(), listId).listKey)
                 .appendQueryParameter("changed_content", itemsToDelete)
                 .build();
-        Log.d(LOG_TAG, url.toString());
+        Log.d(LOG_TAG, url.toString() + "\n " +itemsToDelete);
 
         //Attempt to login as the user
         HttpURLConnection connection = null;
@@ -799,8 +805,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION,ACTION_GROUP_CREATE);
         bundle.putString(EXTRA_USER_KEY, GroupsSyncAccount.getUserKey(context));
@@ -817,8 +821,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         JSONArray userNamesJSON = new JSONArray();
         for (String userName : userNames) {
@@ -841,8 +843,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_USER_GET_GROUPS);
         bundle.putString(EXTRA_USER_KEY, userKey);
@@ -858,8 +858,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_CONFIRM);
         bundle.putString(EXTRA_USER_KEY, userKey);
@@ -878,8 +876,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION,ACTION_LIST_CREATE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -897,8 +893,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_ITEM_ADD);
         bundle.putLong(EXTRA_ITEM_ID, itemId);
@@ -915,8 +909,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_LEAVE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -933,8 +925,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_RENAME);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -951,8 +941,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_GROUP_SET_IMAGE);
         bundle.putLong(EXTRA_GROUP_ID, groupId);
@@ -968,8 +956,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_LIST_DELETE);
         bundle.putLong(EXTRA_LIST_ID, listId);
@@ -985,8 +971,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_LIST_RENAME);
         bundle.putLong(EXTRA_LIST_ID, listId);
@@ -1003,8 +987,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_ITEM_DELETE);
         bundle.putLong(EXTRA_LIST_ID, listId);
@@ -1036,8 +1018,6 @@ public class GroupsSyncAdapter extends AbstractThreadedSyncAdapter {
         Account account = GroupsSyncAccount.getSyncAccount(context);
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
 
         bundle.putInt(EXTRA_ACTION, ACTION_ITEM_CHECK);
         bundle.putLong(EXTRA_LIST_ID, listId);
